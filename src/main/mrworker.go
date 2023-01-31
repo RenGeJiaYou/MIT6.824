@@ -10,7 +10,7 @@ package main
 // Please do not change this file.
 //
 
-import "6.824/mr"
+import "mit2/src/mr"
 import "plugin"
 import "os"
 import "fmt"
@@ -22,7 +22,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	mapf, reducef := loadPlugin(os.Args[1])
+	mapf, reducef := loadPlugin(os.Args[1]) // os.Args 保存了调用命令的参数，第[0] 是 "mrworker.go";第[1]个是"wc.so"
 
 	mr.Worker(mapf, reducef)
 }

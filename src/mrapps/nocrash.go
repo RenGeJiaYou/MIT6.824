@@ -6,7 +6,7 @@ package main
 // go build -buildmode=plugin nocrash.go
 //
 
-import "6.824/mr"
+import "mit2/src/mr"
 import crand "crypto/rand"
 import "math/big"
 import "strings"
@@ -23,7 +23,7 @@ func maybeCrash() {
 	}
 }
 
-func Map(filename string, contents string) []mr.KeyValue {
+func MapNoCrash(filename string, contents string) []mr.KeyValue {
 	maybeCrash()
 
 	kva := []mr.KeyValue{}
@@ -34,7 +34,7 @@ func Map(filename string, contents string) []mr.KeyValue {
 	return kva
 }
 
-func Reduce(key string, values []string) string {
+func ReduceNoCrash(key string, values []string) string {
 	maybeCrash()
 
 	// sort values to ensure deterministic output.
