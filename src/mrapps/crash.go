@@ -17,7 +17,7 @@ import "sort"
 import "strconv"
 import "time"
 
-func maybeCrashCrash() {
+func maybeCrash() {
 	max := big.NewInt(1000)
 	rr, _ := crand.Int(crand.Reader, max)
 	if rr.Int64() < 330 {
@@ -31,7 +31,7 @@ func maybeCrashCrash() {
 	}
 }
 
-func MapCrash(filename string, contents string) []mr.KeyValue {
+func Map(filename string, contents string) []mr.KeyValue {
 	maybeCrash()
 
 	kva := []mr.KeyValue{}
@@ -42,7 +42,7 @@ func MapCrash(filename string, contents string) []mr.KeyValue {
 	return kva
 }
 
-func ReduceCrash(key string, values []string) string {
+func Reduce(key string, values []string) string {
 	maybeCrash()
 
 	// sort values to ensure deterministic output.

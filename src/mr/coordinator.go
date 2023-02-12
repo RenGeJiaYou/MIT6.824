@@ -1,14 +1,34 @@
 package mr
 
-import "log"
+import (
+	"log"
+)
 import "net"
 import "os"
 import "net/rpc"
 import "net/http"
 
+type MapTaskState struct {
+	beginTime int64
+	workID    int
+	fileID    int
+}
+
+type ReduceTaskState struct {
+	beginTime int64
+	workID    int
+	fileID    int
+}
+
 type Coordinator struct {
 	// Your definitions here.
+	filename []string // 数据文件的文件名集合
+	nReduce  int      // Reduce 进程的数量
 
+	curWorkerId int // 当前 worker id
+
+	mapTasks    []MapTaskState
+	reduceTasks []ReduceTaskState
 }
 
 // Your code here -- RPC handlers for the worker to call.

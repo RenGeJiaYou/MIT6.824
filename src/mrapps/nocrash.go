@@ -23,7 +23,7 @@ func maybeCrash() {
 	}
 }
 
-func MapNoCrash(filename string, contents string) []mr.KeyValue {
+func Map(filename string, contents string) []mr.KeyValue {
 	maybeCrash()
 
 	kva := []mr.KeyValue{}
@@ -34,7 +34,7 @@ func MapNoCrash(filename string, contents string) []mr.KeyValue {
 	return kva
 }
 
-func ReduceNoCrash(key string, values []string) string {
+func Reduce(key string, values []string) string {
 	maybeCrash()
 
 	// sort values to ensure deterministic output.
