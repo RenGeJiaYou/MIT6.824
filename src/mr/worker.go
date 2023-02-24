@@ -16,11 +16,15 @@ type KeyValue struct {
 //
 // use ihash(key) % NReduce to choose the reduce
 // task number for each KeyValue emitted by Map.
-//
 func ihash(key string) int {
-	h := fnv.New32a()
-	h.Write([]byte(key))
-	return int(h.Sum32() & 0x7fffffff)
+	h := fnv.New32a()                  // fnv 算法让高度相似的字符串也能均匀分散在 map
+	h.Write([]byte(key))               // New32a() 返回一个 uint32 的指针对象，Write()根据传入的 key 修改 h(所指内存地址) 的 Hash 结果值
+	return int(h.Sum32() & 0x7fffffff) // Sum32() 强制将 h 转回 uint32
+}
+
+// keyReduceIndex 根据键值对的 key 返回应该输出一个序号，指定是哪个 Reduce 任务
+func keyReduceIndex(key string, nReduce int) int {
+	return ihash(key) % nReduce
 }
 
 // Worker
