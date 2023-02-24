@@ -2,6 +2,7 @@ package mr
 
 import (
 	"log"
+	"sync"
 )
 import "net"
 import "os"
@@ -27,8 +28,18 @@ type Coordinator struct {
 
 	curWorkerId int // 当前 worker id
 
+	// Map Part
+	// Map 任务有且只有三种状态：未执行(unIssuedMapTasks 维护)、正在执行(issuedMapTasks 维护)，执行完毕(前两者同时为空)
+	unIssuedMapTask *BlockQueue // 一个队列，维护所有未运行的 map 任务，运行但超时的 map 任务也将重新放回这里
+	issuedMapTask   *MapSet     // 一个 map，维护所有正在运行的 map 任务，运行完后移出。
+	issuedMutex     sync.Mutex  // 多线程竞态需加锁
+
 	mapTasks    []MapTaskState
 	reduceTasks []ReduceTaskState
+
+	// state
+	mapDone bool
+	allDone bool
 }
 
 // Your code here -- RPC handlers for the worker to call.

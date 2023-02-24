@@ -5,6 +5,8 @@ import "log"
 import "net/rpc"
 import "hash/fnv"
 
+// 我的编码
+
 // KeyValue
 // Map functions return a slice of KeyValue.
 //
@@ -13,19 +15,40 @@ type KeyValue struct {
 	Value string
 }
 
-//
-// use ihash(key) % NReduce to choose the reduce
-// task number for each KeyValue emitted by Map.
+// keyReduceIndex 调用 ihash(key) % NReduce
+// 根据当前 Map 任务产生的键值对，计算出对应的目标 reduce 任务的序号
 func ihash(key string) int {
 	h := fnv.New32a()                  // fnv 算法让高度相似的字符串也能均匀分散在 map
 	h.Write([]byte(key))               // New32a() 返回一个 uint32 的指针对象，Write()根据传入的 key 修改 h(所指内存地址) 的 Hash 结果值
 	return int(h.Sum32() & 0x7fffffff) // Sum32() 强制将 h 转回 uint32
 }
-
-// keyReduceIndex 根据键值对的 key 返回应该输出一个序号，指定是哪个 Reduce 任务
 func keyReduceIndex(key string, nReduce int) int {
 	return ihash(key) % nReduce
 }
+
+// Aworker 表示一个 worker 实例
+type Aworker struct {
+	mapf    func(filename string, contents string) []KeyValue
+	reducef func(key string, values []string) string
+
+	// false on map
+	// true on reduce
+	mapOrReduce bool
+
+	// map 任务和 reduce 任务全部完成后，才会被改为 true
+	allDone bool
+
+	workerID uint8
+}
+
+// logPrintf 辅助函数，打印 log
+func (w *Aworker) logPrintf(format string, vars ...interface{}) {
+	log.Printf("worker %d: "+format, w.workerID, vars)
+}
+
+// ======================================= ↓ Map Task Part ↓ =======================================
+
+// ======================================= ↑ Map Task Part ↑ =======================================
 
 // Worker
 // main/mrworker.go calls this function.
