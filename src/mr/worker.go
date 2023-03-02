@@ -1,6 +1,9 @@
 package mr
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 import "log"
 import "net/rpc"
 import "hash/fnv"
@@ -47,6 +50,26 @@ func (w *Aworker) logPrintf(format string, vars ...interface{}) {
 }
 
 // ======================================= ↓ Map Task Part ↓ =======================================
+// 调用插件里的 Map 函数，完成底层的 Map 操作
+func makeIntermediateFromFile(filename string, mapf func(string, string) []KeyValue) []KeyValue {
+	// 获取文件名 filename
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Printf(filename)
+	}
+	defer file.Close()
+
+	// 根据文件名获取文件内容，存在一个大 string 里 content
+	var content []byte
+	_, err = file.Read(content)
+	if err != nil {
+		log.Println(filename + "content can't read")
+	}
+	// 调用 mapf,结果返回出去
+	kva := mapf(filename, string(content))
+	return kva
+
+}
 
 // ======================================= ↑ Map Task Part ↑ =======================================
 
