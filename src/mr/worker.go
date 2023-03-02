@@ -50,12 +50,12 @@ func (w *Aworker) logPrintf(format string, vars ...interface{}) {
 }
 
 // ======================================= ↓ Map Task Part ↓ =======================================
-// 调用插件里的 Map 函数，完成底层的 Map 操作
+// makeIntermediateFromFile 调用插件里的 Map 函数，完成底层的 Map 操作
 func makeIntermediateFromFile(filename string, mapf func(string, string) []KeyValue) []KeyValue {
 	// 获取文件名 filename
 	file, err := os.Open(filename)
 	if err != nil {
-		log.Fatalf("cannot open %v", filename)
+		log.Fatalf("cannot open %v", filename) // 在文件读取期就出错属于 Fatal 级别错误，不能用成员函数 logPrintf() ,自然也不用写接收器
 	}
 	defer file.Close()
 
@@ -68,7 +68,31 @@ func makeIntermediateFromFile(filename string, mapf func(string, string) []KeyVa
 	// 调用 mapf,结果返回出去
 	kva := mapf(filename, string(content))
 	return kva
+}
 
+// writeToFiles 负责将 makeIntermediateFromFile() 生成的键值对保存到Linux 内的 var/tmp
+// 第 i 个 map 任务传给第 j 个 reduce 的临时文件称为"mr-i-j",第 j 个 Reduce 任务读取所有的 "mr-*-j" 文件
+// 在执行第 i 个 map 任务时会生成一个 fileID ，并调用本函数传入实参
+func (worker *Aworker) writeToFiles(fileID int, nReduce int, intermediate []KeyValue) {
+	// 根据 Hash 函数分割 intermediate
+	kvas := make([][]KeyValue, nReduce)
+	for i := 0; i < nReduce; i++ {
+		kvas[i] = make([]KeyValue, 0)
+	}
+
+	for _, kv := range intermediate {
+		index := keyReduceIndex(kv.Key, nReduce)
+		kvas[index] = append(kvas[index], kv)
+	}
+
+	// 将每个分割块保存到临时文件
+	for i := 0; i < nReduce; i++ {
+		tempfile, err := os.CreateTemp(".", "mrtemp")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	}
 }
 
 // ======================================= ↑ Map Task Part ↑ =======================================
