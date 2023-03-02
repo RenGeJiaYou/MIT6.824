@@ -2,6 +2,7 @@ package mr
 
 import (
 	"fmt"
+	"io"
 	"os"
 )
 import "log"
@@ -12,7 +13,6 @@ import "hash/fnv"
 
 // KeyValue
 // Map functions return a slice of KeyValue.
-//
 type KeyValue struct {
 	Key   string
 	Value string
@@ -55,16 +55,16 @@ func makeIntermediateFromFile(filename string, mapf func(string, string) []KeyVa
 	// 获取文件名 filename
 	file, err := os.Open(filename)
 	if err != nil {
-		log.Printf(filename)
+		log.Fatalf("cannot open %v", filename)
 	}
 	defer file.Close()
 
 	// 根据文件名获取文件内容，存在一个大 string 里 content
-	var content []byte
-	_, err = file.Read(content)
+	content, err := io.ReadAll(file) // 回头研究 File 类型是否实现了 Reader 接口
 	if err != nil {
-		log.Println(filename + "content can't read")
+		log.Fatalf("can't read %v", filename)
 	}
+
 	// 调用 mapf,结果返回出去
 	kva := mapf(filename, string(content))
 	return kva
@@ -75,7 +75,6 @@ func makeIntermediateFromFile(filename string, mapf func(string, string) []KeyVa
 
 // Worker
 // main/mrworker.go calls this function.
-//
 func Worker(mapf func(string, string) []KeyValue,
 	reducef func(string, []string) string) {
 
@@ -90,7 +89,6 @@ func Worker(mapf func(string, string) []KeyValue,
 // example function to show how to make an RPC call to the coordinator.
 //
 // the RPC argument and reply types are defined in rpc.go.
-//
 func CallExample() {
 
 	// declare an argument structure.
@@ -115,11 +113,9 @@ func CallExample() {
 	}
 }
 
-//
 // send an RPC request to the coordinator, wait for the response.
 // usually returns true.
 // returns false if something goes wrong.
-//
 func call(rpcname string, args interface{}, reply interface{}) bool {
 	// c, err := rpc.DialHTTP("tcp", "127.0.0.1"+":1234")
 	sockname := coordinatorSock()
