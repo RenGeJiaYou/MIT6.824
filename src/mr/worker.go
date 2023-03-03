@@ -10,8 +10,6 @@ import "log"
 import "net/rpc"
 import "hash/fnv"
 
-// 我的编码
-
 // KeyValue
 // Map functions return a slice of KeyValue.
 type KeyValue struct {
@@ -43,7 +41,7 @@ type Aworker struct {
 	// map 任务和 reduce 任务全部完成后，才会被改为 true
 	allDone bool
 
-	workerID uint8
+	workerID int
 }
 
 // logPrintf 辅助函数，打印 log
@@ -107,6 +105,37 @@ func (worker *Aworker) writeToFiles(fileID int, nReduce int, intermediate []KeyV
 			worker.logPrintf("rename tempfile failed for %v\n", oname)
 		}
 	}
+}
+
+// 执行 RPC 调用，向 master 请求任务
+func (worker *Aworker) askMapTask() *MapTaskReply {
+	args := MapTaskArgs{}
+	args.workerID = worker.workerID
+	reply := MapTaskReply{}
+
+	worker.logPrintf("requesting for a map task...\n")
+
+	// "Coordinator.GiveMapTask" 表示调用 Coordinator 对象实例下的 GiveMapTask()
+	call("Coordinator.GiveMapTask", &args, &reply)
+
+	worker.workerID = reply.workerID
+
+	if reply.fileID == -1 {
+		// 说明没有剩余任务了
+		if reply.allDone == true {
+			worker.logPrintf("no more map task,switch to reduce mode\n")
+			return nil
+		} else {
+			return &reply
+		}
+	}
+	worker.logPrintf("got map task on file %v %v\n", reply.fileID, reply.fileName)
+
+	return &reply // 因为变量逃逸机制，允许返回局部变量的指针
+}
+
+func (worker *Aworker) joinMapTask(fileID int) {
+
 }
 
 // ======================================= ↑ Map Task Part ↑ =======================================
