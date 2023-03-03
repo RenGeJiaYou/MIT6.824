@@ -1,6 +1,7 @@
 package mr
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -25,6 +26,7 @@ func ihash(key string) int {
 	h.Write([]byte(key))               // New32a() 返回一个 uint32 的指针对象，Write()根据传入的 key 修改 h(所指内存地址) 的 Hash 结果值
 	return int(h.Sum32() & 0x7fffffff) // Sum32() 强制将 h 转回 uint32
 }
+
 func keyReduceIndex(key string, nReduce int) int {
 	return ihash(key) % nReduce
 }
@@ -79,19 +81,31 @@ func (worker *Aworker) writeToFiles(fileID int, nReduce int, intermediate []KeyV
 	for i := 0; i < nReduce; i++ {
 		kvas[i] = make([]KeyValue, 0)
 	}
-
 	for _, kv := range intermediate {
 		index := keyReduceIndex(kv.Key, nReduce)
 		kvas[index] = append(kvas[index], kv)
 	}
 
-	// 将每个分割块保存到临时文件
+	// 将每个分割块(Go Struct)转换为 JSON 文本保存到临时文件
 	for i := 0; i < nReduce; i++ {
 		tempfile, err := os.CreateTemp(".", "mrtemp")
 		if err != nil {
 			log.Fatal(err)
 		}
 
+		enc := json.NewEncoder(tempfile)
+		for _, kv := range kvas[i] {
+			err := enc.Encode(&kv) // 注意取值操作
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		oname := fmt.Sprintf("mr-%v-%v", fileID, i)
+		err = os.Rename(tempfile.Name(), oname)
+		if err != nil {
+			worker.logPrintf("rename tempfile failed for %v\n", oname)
+		}
 	}
 }
 
