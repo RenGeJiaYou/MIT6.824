@@ -50,6 +50,33 @@ func (w *Aworker) logPrintf(format string, vars ...interface{}) {
 }
 
 // ======================================= ↓ Map Task Part ↓ =======================================
+// askMapTask 执行 RPC 调用，向 master 请求任务
+func (worker *Aworker) askMapTask() *MapTaskReply {
+	args := MapTaskArgs{}
+	args.workerID = worker.workerID
+	reply := MapTaskReply{}
+
+	worker.logPrintf("requesting for a map task...\n")
+
+	// "Coordinator.GiveMapTask" 表示调用 Coordinator 对象实例下的 GiveMapTask()
+	call("Coordinator.GiveMapTask", &args, &reply)
+
+	worker.workerID = reply.workerID
+
+	if reply.fileID == -1 {
+		// 说明没有剩余任务了
+		if reply.allDone == true {
+			worker.logPrintf("no more map task,switch to reduce mode\n")
+			return nil
+		} else {
+			return &reply
+		}
+	}
+	worker.logPrintf("got map task on file %v %v\n", reply.fileID, reply.fileName)
+
+	return &reply // 因为变量逃逸机制，允许返回局部变量的指针
+}
+
 // makeIntermediateFromFile 调用插件里的 Map 函数，完成底层的 Map 操作
 func makeIntermediateFromFile(filename string, mapf func(string, string) []KeyValue) []KeyValue {
 	// 获取文件名 filename
@@ -107,35 +134,21 @@ func (worker *Aworker) writeToFiles(fileID int, nReduce int, intermediate []KeyV
 	}
 }
 
-// 执行 RPC 调用，向 master 请求任务
-func (worker *Aworker) askMapTask() *MapTaskReply {
-	args := MapTaskArgs{}
-	args.workerID = worker.workerID
-	reply := MapTaskReply{}
-
-	worker.logPrintf("requesting for a map task...\n")
-
-	// "Coordinator.GiveMapTask" 表示调用 Coordinator 对象实例下的 GiveMapTask()
-	call("Coordinator.GiveMapTask", &args, &reply)
-
-	worker.workerID = reply.workerID
-
-	if reply.fileID == -1 {
-		// 说明没有剩余任务了
-		if reply.allDone == true {
-			worker.logPrintf("no more map task,switch to reduce mode\n")
-			return nil
-		} else {
-			return &reply
-		}
-	}
-	worker.logPrintf("got map task on file %v %v\n", reply.fileID, reply.fileName)
-
-	return &reply // 因为变量逃逸机制，允许返回局部变量的指针
-}
-
+// joinMapTask RPC 请求 coordinator 中的 joinMapTask
 func (worker *Aworker) joinMapTask(fileID int) {
+	args := MapTaskJoinArgs{}
+	args.workerID = worker.workerID
+	args.fileID = fileID
 
+	reply := MapTaskJoinReply{}
+
+	call("Coordinator.JoinMapTask", &args, &reply)
+
+	if reply.accept {
+		worker.logPrintf("accepted\n")
+	} else {
+		worker.logPrintf("not accepted\n")
+	}
 }
 
 // ======================================= ↑ Map Task Part ↑ =======================================

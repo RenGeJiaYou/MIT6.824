@@ -10,10 +10,12 @@ import "os"
 import "net/rpc"
 import "net/http"
 
+const maxTaskTime = 10 // seconds
+
 // MapTaskState 的结构说明了：哪个 worker(workerId) 在什么时候(beginSecond)处理哪个文件(fileId)
 type MapTaskState struct {
 	beginTime int64
-	workID    int
+	workerID  int
 	fileID    int
 }
 
@@ -79,7 +81,7 @@ func mapDoneProcess(reply *MapTaskReply) {
 	reply.allDone = true
 }
 
-// GiveMapTask
+// GiveMapTask 主要是将 unIssuedTask 全部处理完
 func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error {
 	// 为第一次请求任务的 Worker 分配一个 ID
 	if args.workerID == -1 {
@@ -123,7 +125,7 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 		c.issuedMapMutex.Lock()
 		reply.fileName = c.filename[fileID]
 		c.mapTasks[fileID].beginTime = curTime // todo: 重构点2，直接在此调用函数
-		c.mapTasks[fileID].workID = reply.workerID
+		c.mapTasks[fileID].workerID = reply.workerID
 		c.issuedMapTask.Insert(fileID) // ※ 将取出的任务放到 issuedMapTasks 中
 		c.issuedMapMutex.Unlock()
 		log.Printf("giving map task %v on file %v at second %v\n", fileID, reply.fileName, curTime)
@@ -154,6 +156,45 @@ type MapTaskJoinReply struct {
 
 func getNowTimeSecond() int64 {
 	return time.Now().Unix()
+}
+
+// JoinMapTask 主要是将 issuedTask 全部处理完。并将信息(「哪个 worker」在「什么时间」申请处理「哪个任务」)记录到 mapTasks
+func (c *Coordinator) JoinMapTask(args *MapTaskJoinArgs, reply *MapTaskJoinReply) error {
+	log.Printf("got join request form worker %v on file %v %v\n", args.workerID, args.fileID, c.mapTasks[args.fileID])
+
+	c.issuedMapMutex.Lock()
+
+	// 意外情况一：当前任务不存在于 issuedMapTask 队列里
+	if !c.issuedMapTask.Has(args.fileID) {
+		log.Println("task abandoned or does not exists, ignoring...")
+		reply.accept = false
+		c.issuedMapMutex.Unlock()
+		return nil
+	}
+
+	// 意外情况二：当前 worker 请求的是其它 worker 的任务
+	if c.mapTasks[args.fileID].workerID != args.workerID {
+		log.Printf("map task belongs to worker %v not this %v, ignoring...", c.mapTasks[args.fileID].workerID, args.workerID)
+		reply.accept = false
+		c.issuedMapMutex.Unlock()
+		return nil
+	}
+
+	// 意外情况三：worker 执行任务超时
+	curTime := getNowTimeSecond()
+	taskTime := c.mapTasks[args.fileID].beginTime
+	if curTime-taskTime > maxTaskTime {
+		log.Println("task exceeds max wait time, abadoning... ")
+		reply.accept = false
+		c.unIssuedMapTask.PutFront(args.fileID) // 任务超时，将该 map 任务重新放回 unIssuedMapTasks 队列
+	} else {
+		log.Println("task within max wait time, accepting...")
+		reply.accept = true
+		c.issuedMapTask.Remove(args.fileID) // ※ 核心语句：任务已完成，从 issuedMapTasks 取出该项
+	}
+
+	c.issuedMapMutex.Unlock()
+	return nil
 }
 
 // an example RPC handler.
