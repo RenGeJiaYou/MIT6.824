@@ -6,6 +6,8 @@ import (
 )
 
 // 定义 unIssued[Map/Reduce]Task 的数据结构，日后将用 Go 原生的 channel 代替
+// 实际存入的 data 是 int 类型的 0 ~ len(文件)-1 ，表示每一个任务
+
 //（Go 的 sync.Cond 明确提出大多数场景下 channels 比 Cond 更好
 // Broadcast 等同于关闭一个 channel,Signal 等同于发信息给一个 channel）
 

@@ -3,6 +3,7 @@ package mr
 import (
 	"log"
 	"sync"
+	"time"
 )
 import "net"
 import "os"
@@ -78,6 +79,7 @@ func mapDoneProcess(reply *MapTaskReply) {
 	reply.allDone = true
 }
 
+// GiveMapTask
 func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error {
 	// 为第一次请求任务的 Worker 分配一个 ID
 	if args.workerID == -1 {
@@ -106,6 +108,30 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 		mapDoneProcess(reply)
 		return nil
 	}
+	log.Printf("%v unIssued map tasks,%v issued map tasks at hand\n", c.unIssuedReduceTask.Size(), c.issuedMapTask.Size())
+	c.issuedMapMutex.Unlock()
+
+	curTime := getNowTimeSecond()
+	ret, err := c.unIssuedMapTask.PopBack() // ※ 从 unIssuedMapTasks 队列中取出一个任务
+	var fileID int
+	if err != nil {
+		log.Printf("已无 map 任务，Worker 等待")
+		fileID = -1
+	} else {
+		// todo:重构点1：如果全部完成后运行无误，考虑删去 else{}
+		fileID = ret.(int)
+		c.issuedMapMutex.Lock()
+		reply.fileName = c.filename[fileID]
+		c.mapTasks[fileID].beginTime = curTime // todo: 重构点2，直接在此调用函数
+		c.mapTasks[fileID].workID = reply.workerID
+		c.issuedMapTask.Insert(fileID) // ※ 将取出的任务放到 issuedMapTasks 中
+		c.issuedMapMutex.Unlock()
+		log.Printf("giving map task %v on file %v at second %v\n", fileID, reply.fileName, curTime)
+	}
+
+	reply.fileID = fileID
+	reply.allDone = false
+	reply.nReduce = c.nReduce
 
 	return nil
 }
@@ -124,6 +150,10 @@ type MapTaskJoinArgs struct {
 
 type MapTaskJoinReply struct {
 	accept bool
+}
+
+func getNowTimeSecond() int64 {
+	return time.Now().Unix()
 }
 
 // an example RPC handler.
