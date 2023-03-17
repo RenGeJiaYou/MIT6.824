@@ -58,7 +58,7 @@ func (worker *Aworker) askMapTask() *MapTaskReply {
 
 	worker.logPrintf("requesting for a map task...\n")
 
-	// "Coordinator.GiveMapTask" 表示调用 Coordinator 对象实例下的 GiveMapTask()
+	// ※ "Coordinator.GiveMapTask" 表示调用 Coordinator 对象实例下的 GiveMapTask()
 	call("Coordinator.GiveMapTask", &args, &reply)
 
 	worker.workerID = reply.workerID
@@ -150,18 +150,60 @@ func (worker *Aworker) joinMapTask(fileID int) {
 		worker.logPrintf("not accepted\n")
 	}
 }
+func (worker *Aworker) executeMap(reply *MapTaskReply) {
+	intermediate := makeIntermediateFromFile(reply.fileName, worker.mapf)
+	worker.logPrintf("writing map results to file\n")
+	worker.writeToFiles(reply.fileID, reply.nReduce, intermediate)
+	worker.joinMapTask(reply.fileID)
+}
 
 // ======================================= ↑ Map Task Part ↑ =======================================
+// process() 的任务是根据 mapOrReduce 的状态选择让 worker 执行 Map 或 Reduce.
+// mapOrReduce 的初始值在 Worker() 给定为 false,当 RPC 响应无结果时将切换到另一种状态.
+// 获知任务信息后（存于变量 reply）,将传递给对应的 execute() 具体完成执行任务。
+func (worker *Aworker) process() {
+	if !worker.mapOrReduce { //todo 重构点3 更改为 true 进入 map;false 进入 reduce.比较符合变量名的直觉
+		// process map task
+		// todo 重构点4 分支语句可简化
+		reply := worker.askMapTask()
+		if reply == nil {
+			worker.mapOrReduce = true // 切换到 reduce 模式
+		} else {
+			if reply.fileID == -1 {
+				// -1 表示目前没有 map 任务。
+				// 但要考虑到正在执行 map 的其它 worker 可能因为超时而将任务重新放回 unIssuedMapTask 队列。
+				// 因此不可切换 reduce 模式
+			} else {
+				worker.executeMap(reply)
+			}
+		}
+	}
+
+	if worker.mapOrReduce {
+		// process reduce task
+	}
+}
 
 // Worker
 // main/mrworker.go calls this function.
 func Worker(mapf func(string, string) []KeyValue,
 	reducef func(string, []string) string) {
 
-	// Your worker implementation here.
+	// 初始化一个 worker
+	worker := Aworker{}
+	worker.mapf = mapf
+	worker.reducef = reducef
+	worker.mapOrReduce = false
+	worker.allDone = false
+	worker.workerID = -1 // 表示一个 worker 的初始状态。随后在与 master 的通信中确定自己的唯一工号，即 0 ~ len(任务)-1 其一
 
-	// uncomment to send the Example RPC to the coordinator.
-	// CallExample()
+	worker.logPrintf("initialized!\n")
+
+	// main process
+	for !worker.allDone {
+		worker.process()
+	}
+	worker.logPrintf("no more tasks, all done, exiting...\n")
 
 }
 

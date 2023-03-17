@@ -131,7 +131,7 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 		log.Printf("giving map task %v on file %v at second %v\n", fileID, reply.fileName, curTime)
 	}
 
-	reply.fileID = fileID
+	reply.fileID = fileID // reply 中的 fileID 要么用 -1 表示已无 map 任务，要么用 0~len(文件集合)表示当前的一个 map 任务
 	reply.allDone = false
 	reply.nReduce = c.nReduce
 
