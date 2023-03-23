@@ -238,6 +238,22 @@ func MakeCoordinator(files []string, nReduce int) *Coordinator {
 	c := Coordinator{}
 
 	// Your code here.
+	c.filename = files
+	c.nReduce = nReduce
+	c.curWorkerId = 0 // worker ID 编号从0~len(files)-1 ,和任务数量一一对应
+
+	c.mapTasks = make([]MapTaskState, len(files))
+	c.reduceTasks = make([]ReduceTaskState, nReduce)
+
+	c.unIssuedMapTask = NewBlockQueue()
+	c.issuedMapTask = NewMapSet()
+
+	c.allDone = false
+	c.mapDone = false
+
+	log.SetPrefix("coordinator: ")
+	log.Println("coordinator was initialized")
+
 
 	c.server()
 	log.Printf("rpc listening start")
