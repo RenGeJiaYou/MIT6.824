@@ -44,16 +44,16 @@ type Aworker struct {
 	workerID int
 }
 
-// logPrintf 辅助函数，打印 log
-func (w *Aworker) logPrintf(format string, vars ...interface{}) {
-	log.Printf("worker %d: "+format, w.workerID, vars)
+// logPrintf 辅助函数，打印当前workerID 及 log
+func (worker *Aworker) logPrintf(format string, vars ...interface{}) {
+	log.Printf("worker %d: "+format, worker.workerID, vars)
 }
 
 // ======================================= ↓ Map Task Part ↓ =======================================
 // askMapTask 执行 RPC 调用，向 master 请求任务
 func (worker *Aworker) askMapTask() *MapTaskReply {
 	args := MapTaskArgs{}
-	args.workerID = worker.workerID
+	args.WorkerID = worker.workerID
 	reply := MapTaskReply{}
 
 	worker.logPrintf("requesting for a map task...\n")
@@ -61,18 +61,18 @@ func (worker *Aworker) askMapTask() *MapTaskReply {
 	// ※ "Coordinator.GiveMapTask" 表示调用 Coordinator 对象实例下的 GiveMapTask()
 	call("Coordinator.GiveMapTask", &args, &reply)
 
-	worker.workerID = reply.workerID
+	worker.workerID = reply.WorkerID
 
-	if reply.fileID == -1 {
+	if reply.FileID == -1 {
 		// 说明没有剩余任务了
-		if reply.allDone == true {
+		if reply.AllDone == true {
 			worker.logPrintf("no more map task,switch to reduce mode\n")
 			return nil
 		} else {
 			return &reply
 		}
 	}
-	worker.logPrintf("got map task on file %v %v\n", reply.fileID, reply.fileName)
+	worker.logPrintf("got map task on file %v %v\n", reply.FileID, reply.FileName)
 
 	return &reply // 因为变量逃逸机制，允许返回局部变量的指针
 }
@@ -99,7 +99,7 @@ func makeIntermediateFromFile(filename string, mapf func(string, string) []KeyVa
 
 // writeToFiles 负责将 makeIntermediateFromFile() 生成的键值对保存到Linux 内的 var/tmp
 // 第 i 个 map 任务传给第 j 个 reduce 的临时文件称为"mr-i-j",第 j 个 Reduce 任务读取所有的 "mr-*-j" 文件
-// 在执行第 i 个 map 任务时会生成一个 fileID ，并调用本函数传入实参
+// 在执行第 i 个 map 任务时会生成一个 FileID ，并调用本函数传入实参
 func (worker *Aworker) writeToFiles(fileID int, nReduce int, intermediate []KeyValue) {
 	// 根据 Hash 函数分割 intermediate
 	kvas := make([][]KeyValue, nReduce)
@@ -151,13 +151,14 @@ func (worker *Aworker) joinMapTask(fileID int) {
 	}
 }
 func (worker *Aworker) executeMap(reply *MapTaskReply) {
-	intermediate := makeIntermediateFromFile(reply.fileName, worker.mapf)
+	intermediate := makeIntermediateFromFile(reply.FileName, worker.mapf)
 	worker.logPrintf("writing map results to file\n")
-	worker.writeToFiles(reply.fileID, reply.nReduce, intermediate)
-	worker.joinMapTask(reply.fileID)
+	worker.writeToFiles(reply.FileID, reply.NReduce, intermediate)
+	worker.joinMapTask(reply.FileID)
 }
 
 // ======================================= ↑ Map Task Part ↑ =======================================
+
 // process() 的任务是根据 mapOrReduce 的状态选择让 worker 执行 Map 或 Reduce.
 // mapOrReduce 的初始值在 Worker() 给定为 false,当 RPC 响应无结果时将切换到另一种状态.
 // 获知任务信息后（存于变量 reply）,将传递给对应的 execute() 具体完成执行任务。
@@ -169,7 +170,7 @@ func (worker *Aworker) process() {
 		if reply == nil {
 			worker.mapOrReduce = true // 切换到 reduce 模式
 		} else {
-			if reply.fileID == -1 {
+			if reply.FileID == -1 {
 				// -1 表示目前没有 map 任务。
 				// 但要考虑到正在执行 map 的其它 worker 可能因为超时而将任务重新放回 unIssuedMapTask 队列。
 				// 因此不可切换 reduce 模式

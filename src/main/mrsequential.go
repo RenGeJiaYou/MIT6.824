@@ -6,12 +6,14 @@ package main
 // go run mrsequential.go wc.so pg*.txt
 //
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+)
 import "mit2/src/mr"
 import "plugin"
 import "os"
 import "log"
-import "io/ioutil"
 import "sort"
 
 // for sorting by key.
@@ -26,12 +28,14 @@ func main() {
 	// 调用本文件的命令为：go run -race mrsequential.go wc.so pg*.txt
 	// 可知，参数至少有 3 个，从 os.Args[1] 获取插件，从 os.Args[2]及之后 获取源数据
 	if len(os.Args) < 3 {
-		fmt.Fprintf(os.Stderr, "Usage: mrsequential xxx.so inputfiles...\n")
+		fmt.Fprintf(os.Stderr, "len(os.Args) should >= 3!\n")
 		os.Exit(1)
 	}
+	//for _, v := range os.Args {
+	//	fmt.Println(v)
+	//}
 
 	mapf, reducef := loadPluginSeq(os.Args[1])
-
 	//
 	// read each input file,
 	// pass it to Map,
@@ -43,7 +47,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("cannot open %v", filename)
 		}
-		content, err := ioutil.ReadAll(file) // 返回当前文本的内容，类型为 byte[]
+		content, err := io.ReadAll(file) // 返回当前文本的内容，类型为 byte[]
 		if err != nil {
 			log.Fatalf("cannot read %v", filename)
 		}
@@ -94,10 +98,8 @@ func main() {
 	}
 }
 
-//
 // load the application Map and Reduce functions
 // from a plugin file, e.g. ../mrapps/wc.so
-//
 func loadPluginSeq(filename string) (func(string, string) []mr.KeyValue, func(string, []string) string) {
 	p, err := plugin.Open(filename)
 	if err != nil {

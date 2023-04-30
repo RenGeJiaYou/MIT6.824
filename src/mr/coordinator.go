@@ -54,43 +54,43 @@ type Coordinator struct {
 
 type MapTaskArgs struct {
 	// -1 if does not have one
-	workerID int
+	WorkerID int
 }
 
 type MapTaskReply struct {
 	// worker 将调用 os.Open(fileName) 打开文件
-	fileName string
+	FileName string
 
 	// worker 将用于临时文件命名、并后续 RPC 给 master 来标明维护任务队列的具体元素
-	fileID int
+	FileID int
 
 	// worker 将用于临时文件命名
-	nReduce int
+	NReduce int
 
 	// 实际来自 MapTaskArgs
-	workerID int
+	WorkerID int
 
 	// map 全部完成
-	allDone bool
+	AllDone bool
 }
 
 // mapDoneProcess 改变一些字段，好让检测这些字段的其他函数意识到 Map 任务已全部完成
 func mapDoneProcess(reply *MapTaskReply) {
 	log.Println("all map tasks complete, telling workers to switch to reduce mode")
-	reply.fileID = -1
-	reply.allDone = true
+	reply.FileID = -1
+	reply.AllDone = true
 }
 
 // GiveMapTask 主要是将 unIssuedTask 全部处理完
 func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error {
 	// 为第一次请求任务的 Worker 分配一个 ID
-	if args.workerID == -1 {
-		args.workerID = c.curWorkerId
+	if args.WorkerID == -1 {
+		args.WorkerID = c.curWorkerId
 		c.curWorkerId++
 	} else {
-		reply.workerID = args.workerID
+		reply.WorkerID = args.WorkerID
 	}
-	log.Printf("worker %v asks for a map task", reply.workerID)
+	log.Printf("worker %v asks for a map task", reply.WorkerID)
 
 	// 互斥地访问 unIssued 和 issued 任务队列
 	c.issuedMapMutex.Lock()
@@ -123,17 +123,17 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 		// todo:重构点1：如果全部完成后运行无误，考虑删去 else{}
 		fileID = ret.(int)
 		c.issuedMapMutex.Lock()
-		reply.fileName = c.filename[fileID]
+		reply.FileName = c.filename[fileID]
 		c.mapTasks[fileID].beginTime = curTime // todo: 重构点2，直接在此调用函数
-		c.mapTasks[fileID].workerID = reply.workerID
+		c.mapTasks[fileID].workerID = reply.WorkerID
 		c.issuedMapTask.Insert(fileID) // ※ 将取出的任务放到 issuedMapTasks 中
 		c.issuedMapMutex.Unlock()
-		log.Printf("giving map task %v on file %v at second %v\n", fileID, reply.fileName, curTime)
+		log.Printf("giving map task %v on file %v at second %v\n", fileID, reply.FileName, curTime)
 	}
 
-	reply.fileID = fileID // reply 中的 fileID 要么用 -1 表示已无 map 任务，要么用 0~len(文件集合)表示当前的一个 map 任务
-	reply.allDone = false
-	reply.nReduce = c.nReduce
+	reply.FileID = fileID // reply 中的 FileID 要么用 -1 表示已无 map 任务，要么用 0~len(文件集合)表示当前的一个 map 任务
+	reply.AllDone = false
+	reply.NReduce = c.nReduce
 
 	return nil
 }
@@ -223,17 +223,20 @@ func (c *Coordinator) server() {
 // main/mrcoordinator.go calls Done() periodically to find out
 // if the entire job has finished.
 func (c *Coordinator) Done() bool {
-	ret := false
-
 	// Your code here.
+	if c.allDone {
+		log.Println("已经全部完成")
+	} else {
+		log.Println("未完成")
 
-	return ret
+	}
+	return c.allDone
 }
 
 // MakeCoordinator
 // create a Coordinator.
 // main/mrcoordinator.go calls this function.
-// nReduce is the number of reduce tasks to use.
+// NReduce is the number of reduce tasks to use.
 func MakeCoordinator(files []string, nReduce int) *Coordinator {
 	c := Coordinator{}
 
@@ -253,7 +256,6 @@ func MakeCoordinator(files []string, nReduce int) *Coordinator {
 
 	log.SetPrefix("coordinator: ")
 	log.Println("coordinator was initialized")
-
 
 	c.server()
 	log.Printf("rpc listening start")
