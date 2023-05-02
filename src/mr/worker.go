@@ -62,14 +62,12 @@ func (worker *Aworker) askMapTask() *MapTaskReply {
 	// ※ "Coordinator.GiveMapTask" 表示调用 Coordinator 对象实例下的 GiveMapTask()
 	call("Coordinator.GiveMapTask", &args, &reply)
 
-	log.Printf("\033[1;31;40m 当前 Worker 收到的 reply.WorkerID 为： %v \033[0m\n", reply.WorkerID)
-
 	worker.workerID = reply.WorkerID
 
 	if reply.FileID == -1 {
-		// 说明没有剩余任务了
+		// 没有剩余 map 任务 -> nil
 		if reply.AllDone == true {
-			worker.logPrintf("no more map task,switch to reduce mode\n")
+			worker.logPrintf("no more map task,should switch to reduce mode\n")
 			return nil
 		} else {
 			return &reply
@@ -153,6 +151,7 @@ func (worker *Aworker) joinMapTask(fileID int) {
 		worker.logPrintf("not accepted\n")
 	}
 }
+
 func (worker *Aworker) executeMap(reply *MapTaskReply) {
 	intermediate := makeIntermediateFromFile(reply.FileName, worker.mapf)
 	worker.logPrintf("writing map results to file\n")

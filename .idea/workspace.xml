@@ -5,96 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0eea5c4b-c09e-49b5-b631-06058250c985" name="Changes" comment="修改 Args 和 Reply struct 的首字母为大写，以解决可能的访问权限问题">
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-0" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-6" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-7" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-8" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-0-9" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-0" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-6" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-7" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-8" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-1-9" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-0" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-6" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-7" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-8" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-2-9" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-0" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-6" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-7" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-8" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-3-9" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-0" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-6" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-7" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-8" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-4-9" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-0" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-6" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-7" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-8" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-5-9" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-0" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-6" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-7" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-8" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-6-9" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-0" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-1" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-2" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-4" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-5" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-6" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-7" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-8" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mr-7-9" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mrtemp1908353746" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mrtemp296426376" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mrtemp3437911283" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mrtemp3614880545" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mrtemp4026602971" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/mrtemp642008902" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/go_run_mrmaster.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/mrcoordinator.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/mrcoordinator.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mr/coordinator.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/mr/coordinator.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mr/worker.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/mr/worker.go" afterDir="false" />
     </list>
@@ -148,6 +60,7 @@
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "ShowUsagesActions.previewPropertyKey": "true",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "dev",
     "go.import.settings.migrated": "true",
@@ -155,6 +68,7 @@
     "last_opened_file_path": "/home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "settings.editor.selected.configurable": "preferences.keymap"
   },
   "keyToStringList": {
@@ -243,8 +157,8 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Go 构建.go run seq" />
       <item itemvalue="Go 构建.go run mrworker" />
+      <item itemvalue="Go 构建.go run seq" />
       <item itemvalue="Go 构建.go build scratch.go" />
       <item itemvalue="Go 构建.go run mrmaster" />
     </list>
@@ -285,6 +199,11 @@
           <url>file://$PROJECT_DIR$/src/main/mrsequential.go</url>
           <line>30</line>
           <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/main/mrworker.go</url>
+          <line>50</line>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -16,7 +16,8 @@ const maxTaskTime = 10 // seconds
 type MapTaskState struct {
 	beginTime int64
 	workerID  int
-	fileID    int
+	// todo fileID 字段似乎是不必要的
+	fileID int
 }
 
 type ReduceTaskState struct {
@@ -74,7 +75,7 @@ type MapTaskReply struct {
 	AllDone bool
 }
 
-// mapDoneProcess 改变一些字段，好让检测这些字段的其他函数意识到 Map 任务已全部完成
+// mapDoneProcess 改变 reply 一些字段，好让 worker 的 RPC 接收函数 AskMapTask() 意识到 Map 任务已全部完成
 func mapDoneProcess(reply *MapTaskReply) {
 	log.Println("all map tasks complete, telling workers to switch to reduce mode")
 	reply.FileID = -1
@@ -86,7 +87,6 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 	// 为第一次请求任务的 Worker 分配一个 ID
 	if args.WorkerID == -1 {
 		reply.WorkerID = c.curWorkerId
-		log.Printf("\033[1;31;40m 当前 Master 给予的 reply.WorkerID 是 %v \033[0m\n", reply.WorkerID)
 		c.curWorkerId++
 	} else {
 		reply.WorkerID = args.WorkerID
@@ -115,8 +115,8 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 	c.issuedMapMutex.Unlock()
 
 	curTime := getNowTimeSecond()
-	ret, err := c.unIssuedMapTask.PopBack() // ※ 从 unIssuedMapTasks 队列中取出一个任务
 	var fileID int
+	ret, err := c.unIssuedMapTask.PopBack() // ※ 从 unIssuedMapTasks 队列中取出一个任务
 	if err != nil {
 		log.Printf("已无 map 任务，Worker 等待")
 		fileID = -1
@@ -129,7 +129,7 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 		reply.FileName = c.filename[fileID]
 		c.mapTasks[fileID].beginTime = curTime // todo: 重构点2，直接在此调用函数
 		c.mapTasks[fileID].workerID = reply.WorkerID
-		c.issuedMapTask.Insert(fileID) // ※ 将取出的任务放到 issuedMapTasks 中
+		c.issuedMapTask.Insert(fileID) // ※ 将任务l unIssuedMapTask -> issuedMapTasks 中
 		c.issuedMapMutex.Unlock()
 
 		log.Printf("giving map task %v on file %v at second %v\n", fileID, reply.FileName, curTime)
@@ -163,37 +163,49 @@ func getNowTimeSecond() int64 {
 	return time.Now().Unix()
 }
 
-// JoinMapTask 主要是将 issuedTask 全部处理完。并将信息(「哪个 worker」在「什么时间」申请处理「哪个任务」)记录到 mapTasks
+// JoinMapTask 主要是将 issuedTask 全部处理完。并将信息(「哪个任务」在「什么时间」由「哪个 worker」申请处理)记录到 mapTasks
 func (c *Coordinator) JoinMapTask(args *MapTaskJoinArgs, reply *MapTaskJoinReply) error {
-	log.Printf("got join request form worker %v on file %v %v\n", args.WorkerID, args.FileID, c.mapTasks[args.FileID])
+	log.Printf("\033[1;36;40m got join request form worker %v on file %v %v \033[0m\n",
+		args.WorkerID,
+		args.FileID,
+		c.mapTasks[args.FileID])
 
 	c.issuedMapMutex.Lock()
 
 	// 意外情况一：当前任务不存在于 issuedMapTask 队列里
 	if !c.issuedMapTask.Has(args.FileID) {
-		log.Println("task abandoned or does not exists, ignoring...")
+		log.Println("意外情况：当前 map task 不存在于 issuedMapTask 队列里")
 		reply.Accept = false
 		c.issuedMapMutex.Unlock()
 		return nil
 	}
 
-	// 意外情况二：当前 worker 请求的是其它 worker 的任务
+	// 意外情况二：当前 worker 请求的是其它 worker 的任务（其它 worker 正在执行且尚未超时）
 	if c.mapTasks[args.FileID].workerID != args.WorkerID {
-		log.Printf("map task belongs to worker %v not this %v, ignoring...", c.mapTasks[args.FileID].workerID, args.WorkerID)
+		log.Printf("当前 map task 属于 worker %v ,而不是 worker %v",
+			c.mapTasks[args.FileID].workerID,
+			args.WorkerID)
 		reply.Accept = false
 		c.issuedMapMutex.Unlock()
 		return nil
 	}
 
 	// 意外情况三：worker 执行任务超时
+	/*
+		master 进程先把 fileID 从unIssuedMapTask -> issuedMapTask 后，一个 worker 进程才能获取 该 fileID 并处理它。
+		worker 的处理有可能成功也有可能失败（输出的临时文件就是不完整或错误的），
+		但即使失败了，这个 worker 进程崩溃了，它之前拿到的那个 fileID 仍然在issuedMapTask 里面。
+		需要一种机制把超时的 issuedMapTask -> unIssuedMapTask。
+	*/
 	curTime := getNowTimeSecond()
 	taskTime := c.mapTasks[args.FileID].beginTime
 	if curTime-taskTime > maxTaskTime {
-		log.Println("task exceeds max wait time, abadoning... ")
+		log.Println("任务超时，该 map task 将重新放回 unIssuedMapTasks 队列")
 		reply.Accept = false
 		c.unIssuedMapTask.PutFront(args.FileID) // 任务超时，将该 map 任务重新放回 unIssuedMapTasks 队列
+		// 无需相应地清空 c.mapTasks[fileID].放回到 unIssuedMapTask 后会在下一个 worker 进程请求时重新赋值
 	} else {
-		log.Println("task within max wait time, accepting...")
+		log.Println("map task 已在规定的最大限时内完成")
 		reply.Accept = true
 		c.issuedMapTask.Remove(args.FileID) // ※ 核心语句：任务已完成，从 issuedMapTasks 取出该项
 	}
