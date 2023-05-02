@@ -85,7 +85,8 @@ func mapDoneProcess(reply *MapTaskReply) {
 func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error {
 	// 为第一次请求任务的 Worker 分配一个 ID
 	if args.WorkerID == -1 {
-		args.WorkerID = c.curWorkerId
+		reply.WorkerID = c.curWorkerId
+		log.Printf("\033[1;31;40m 当前 Master 给予的 reply.WorkerID 是 %v \033[0m\n", reply.WorkerID)
 		c.curWorkerId++
 	} else {
 		reply.WorkerID = args.WorkerID
@@ -143,18 +144,19 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 
 func (c *Coordinator) prepareAllReduceTasks() {
 	for i := 0; i < c.nReduce; i++ {
-		log.Printf("putting %vth reduce task into channel\n", i)
+		log.Printf("\033[1;32;40m prepareAllReduceTasks():putting %vth reduce task into channel \033[0m\n", i)
 		c.unIssuedReduceTask.PutBack(i)
 	}
 }
 
+// MapTaskJoinArgs 的属性名注意首字母大写，否则无法被 gob 解析
 type MapTaskJoinArgs struct {
-	fileID   int
-	workerID int
+	FileID   int
+	WorkerID int
 }
 
 type MapTaskJoinReply struct {
-	accept bool
+	Accept bool
 }
 
 func getNowTimeSecond() int64 {
@@ -163,37 +165,37 @@ func getNowTimeSecond() int64 {
 
 // JoinMapTask 主要是将 issuedTask 全部处理完。并将信息(「哪个 worker」在「什么时间」申请处理「哪个任务」)记录到 mapTasks
 func (c *Coordinator) JoinMapTask(args *MapTaskJoinArgs, reply *MapTaskJoinReply) error {
-	log.Printf("got join request form worker %v on file %v %v\n", args.workerID, args.fileID, c.mapTasks[args.fileID])
+	log.Printf("got join request form worker %v on file %v %v\n", args.WorkerID, args.FileID, c.mapTasks[args.FileID])
 
 	c.issuedMapMutex.Lock()
 
 	// 意外情况一：当前任务不存在于 issuedMapTask 队列里
-	if !c.issuedMapTask.Has(args.fileID) {
+	if !c.issuedMapTask.Has(args.FileID) {
 		log.Println("task abandoned or does not exists, ignoring...")
-		reply.accept = false
+		reply.Accept = false
 		c.issuedMapMutex.Unlock()
 		return nil
 	}
 
 	// 意外情况二：当前 worker 请求的是其它 worker 的任务
-	if c.mapTasks[args.fileID].workerID != args.workerID {
-		log.Printf("map task belongs to worker %v not this %v, ignoring...", c.mapTasks[args.fileID].workerID, args.workerID)
-		reply.accept = false
+	if c.mapTasks[args.FileID].workerID != args.WorkerID {
+		log.Printf("map task belongs to worker %v not this %v, ignoring...", c.mapTasks[args.FileID].workerID, args.WorkerID)
+		reply.Accept = false
 		c.issuedMapMutex.Unlock()
 		return nil
 	}
 
 	// 意外情况三：worker 执行任务超时
 	curTime := getNowTimeSecond()
-	taskTime := c.mapTasks[args.fileID].beginTime
+	taskTime := c.mapTasks[args.FileID].beginTime
 	if curTime-taskTime > maxTaskTime {
 		log.Println("task exceeds max wait time, abadoning... ")
-		reply.accept = false
-		c.unIssuedMapTask.PutFront(args.fileID) // 任务超时，将该 map 任务重新放回 unIssuedMapTasks 队列
+		reply.Accept = false
+		c.unIssuedMapTask.PutFront(args.FileID) // 任务超时，将该 map 任务重新放回 unIssuedMapTasks 队列
 	} else {
 		log.Println("task within max wait time, accepting...")
-		reply.accept = true
-		c.issuedMapTask.Remove(args.fileID) // ※ 核心语句：任务已完成，从 issuedMapTasks 取出该项
+		reply.Accept = true
+		c.issuedMapTask.Remove(args.FileID) // ※ 核心语句：任务已完成，从 issuedMapTasks 取出该项
 	}
 
 	c.issuedMapMutex.Unlock()
@@ -223,7 +225,7 @@ func (c *Coordinator) server() {
 	go http.Serve(l, nil)
 }
 
-// Done
+// Done 负责检查字段 c.allDone
 // main/mrcoordinator.go calls Done() periodically to find out
 // if the entire job has finished.
 func (c *Coordinator) Done() bool {
@@ -255,13 +257,18 @@ func MakeCoordinator(files []string, nReduce int) *Coordinator {
 	c.unIssuedMapTask = NewBlockQueue()
 	c.issuedMapTask = NewMapSet()
 
+	c.unIssuedReduceTask = NewBlockQueue()
+	c.issuedReduceTask = NewMapSet()
+
 	c.allDone = false
 	c.mapDone = false
 
 	log.SetPrefix("coordinator: ")
 	log.Println("coordinator was initialized")
 	log.Println("files[0]:", files[0])
+
 	c.server()
+
 	log.Printf("Coordinator{} Object was registered, rpc listening start")
 
 	// unIssuedMapTask init

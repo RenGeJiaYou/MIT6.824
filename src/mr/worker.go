@@ -62,6 +62,8 @@ func (worker *Aworker) askMapTask() *MapTaskReply {
 	// ※ "Coordinator.GiveMapTask" 表示调用 Coordinator 对象实例下的 GiveMapTask()
 	call("Coordinator.GiveMapTask", &args, &reply)
 
+	log.Printf("\033[1;31;40m 当前 Worker 收到的 reply.WorkerID 为： %v \033[0m\n", reply.WorkerID)
+
 	worker.workerID = reply.WorkerID
 
 	if reply.FileID == -1 {
@@ -138,14 +140,14 @@ func (worker *Aworker) writeToFiles(fileID int, nReduce int, intermediate []KeyV
 // joinMapTask RPC 请求 coordinator 中的 joinMapTask
 func (worker *Aworker) joinMapTask(fileID int) {
 	args := MapTaskJoinArgs{}
-	args.workerID = worker.workerID
-	args.fileID = fileID
+	args.WorkerID = worker.workerID
+	args.FileID = fileID
 
 	reply := MapTaskJoinReply{}
 
 	call("Coordinator.JoinMapTask", &args, &reply)
 
-	if reply.accept {
+	if reply.Accept {
 		worker.logPrintf("accepted\n")
 	} else {
 		worker.logPrintf("not accepted\n")

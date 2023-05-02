@@ -5,9 +5,97 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0eea5c4b-c09e-49b5-b631-06058250c985" name="Changes" comment="修改 Args 和 Reply struct 的首字母为大写，以解决可能的访问权限问题">
-      <change afterPath="$PROJECT_DIR$/.vscode/launch.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-0" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-6" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-8" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-0-9" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-0" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-6" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-8" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-1-9" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-0" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-6" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-8" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-2-9" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-0" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-6" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-8" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-3-9" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-0" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-6" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-8" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-4-9" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-0" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-6" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-8" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-5-9" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-0" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-6" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-8" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-6-9" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-0" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-6" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-8" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mr-7-9" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mrtemp1908353746" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mrtemp296426376" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mrtemp3437911283" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mrtemp3614880545" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mrtemp4026602971" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/mrtemp642008902" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/go_run_mrmaster.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/mrcoordinator.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/mrcoordinator.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mr/coordinator.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/mr/coordinator.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/mr/rpc.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/mr/rpc.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mr/worker.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/mr/worker.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -22,9 +110,16 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.19.7" />
+  <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.20.3" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GoLibraries">
+    <option name="urls">
+      <list>
+        <option value="file://$USER_HOME$/Go" />
+      </list>
+    </option>
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$USER_HOME$/sdk/go1.16.15/src/runtime/panic.go" root0="SKIP_INSPECTION" />
@@ -43,33 +138,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;DefaultGoTemplateProperty&quot;: &quot;Go Application&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/sjj/Project/Distribute/mit2/src/main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;go.sdk&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "DefaultGoTemplateProperty": "Go Application",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "dev",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "/home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "settings.editor.selected.configurable": "preferences.keymap"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;go&quot;,
-      &quot;Markdown&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "go",
+      "Markdown"
     ]
   }
-}</component>
+}]]></component>
   <component name="RdControllerToolWindowsLayoutState" isNewUi="true">
     <layout>
       <window_info id="Space Code Reviews" />
@@ -99,7 +193,7 @@
       <window_info anchor="right" id="Database" order="1" weight="0.25" />
     </layout>
   </component>
-  <component name="RunManager" selected="Go 构建.go run mrmaster">
+  <component name="RunManager" selected="Go 构建.go run mrworker">
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="mit2" />
       <working_directory value="$PROJECT_DIR$" />
@@ -108,13 +202,23 @@
       <filePath value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration name="go build test.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+    <configuration name="go build scratch.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="mit2" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$APPLICATION_CONFIG_DIR$/scratches/scratch.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go run mrmaster" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true">
+      <module name="mit2" />
+      <working_directory value="$PROJECT_DIR$/src/main" />
+      <go_parameters value="-race" />
+      <parameters value="pg-being_ernest.txt pg-dorian_gray.txt pg-frankenstein.txt pg-grimm.txt pg-huckleberry_finn.txt pg-metamorphosis.txt pg-sherlock_holmes.txt pg-tom_sawyer.txt" />
+      <kind value="FILE" />
       <package value="mit2" />
       <directory value="$PROJECT_DIR$" />
-      <filePath value="$APPLICATION_CONFIG_DIR$/scratches/test.go" />
+      <filePath value="$PROJECT_DIR$/src/main/mrcoordinator.go" />
       <method v="2" />
     </configuration>
     <configuration name="go run seq" type="GoApplicationRunConfiguration" factoryName="Go Application">
@@ -139,14 +243,15 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Go 构建.go run mrworker" />
       <item itemvalue="Go 构建.go run seq" />
+      <item itemvalue="Go 构建.go run mrworker" />
+      <item itemvalue="Go 构建.go build scratch.go" />
       <item itemvalue="Go 构建.go run mrmaster" />
-      <item itemvalue="Go 构建.go build test.go" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Go 构建.go build test.go" />
+        <item itemvalue="Go 构建.go run mrmaster" />
+        <item itemvalue="Go 构建.go build scratch.go" />
       </list>
     </recent_temporary>
   </component>
