@@ -50,6 +50,7 @@ func (worker *Aworker) logPrintf(format string, vars ...interface{}) {
 }
 
 // ======================================= ↓ Map Task Part ↓ =======================================
+
 // askMapTask 执行 RPC 调用，向 master 请求任务
 func (worker *Aworker) askMapTask() *MapTaskReply {
 	args := MapTaskArgs{}

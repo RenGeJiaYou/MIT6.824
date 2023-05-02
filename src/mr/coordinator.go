@@ -110,7 +110,7 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 		mapDoneProcess(reply)
 		return nil
 	}
-	log.Printf("%v unIssued map tasks,%v issued map tasks at hand\n", c.unIssuedReduceTask.Size(), c.issuedMapTask.Size())
+	log.Printf("%v unIssued map tasks,%v issued map tasks at hand\n", c.unIssuedMapTask.Size(), c.issuedMapTask.Size())
 	c.issuedMapMutex.Unlock()
 
 	curTime := getNowTimeSecond()
@@ -122,12 +122,15 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 	} else {
 		// todo:重构点1：如果全部完成后运行无误，考虑删去 else{}
 		fileID = ret.(int)
+		log.Printf("任务 [%v , %s] 从unIssuedMapTask -> issuedMapMutex", fileID, c.filename[fileID])
+
 		c.issuedMapMutex.Lock()
 		reply.FileName = c.filename[fileID]
 		c.mapTasks[fileID].beginTime = curTime // todo: 重构点2，直接在此调用函数
 		c.mapTasks[fileID].workerID = reply.WorkerID
 		c.issuedMapTask.Insert(fileID) // ※ 将取出的任务放到 issuedMapTasks 中
 		c.issuedMapMutex.Unlock()
+
 		log.Printf("giving map task %v on file %v at second %v\n", fileID, reply.FileName, curTime)
 	}
 
@@ -207,6 +210,7 @@ func (c *Coordinator) Example(args *ExampleArgs, reply *ExampleReply) error {
 
 // start a thread that listens for RPCs from worker.go
 func (c *Coordinator) server() {
+
 	rpc.Register(c)
 	rpc.HandleHTTP()
 	//l, e := net.Listen("tcp", ":1234")
@@ -227,7 +231,7 @@ func (c *Coordinator) Done() bool {
 	if c.allDone {
 		log.Println("已经全部完成")
 	} else {
-		log.Println("未完成")
+		log.Println("尚未完成")
 
 	}
 	return c.allDone
@@ -256,9 +260,9 @@ func MakeCoordinator(files []string, nReduce int) *Coordinator {
 
 	log.SetPrefix("coordinator: ")
 	log.Println("coordinator was initialized")
-
+	log.Println("files[0]:", files[0])
 	c.server()
-	log.Printf("rpc listening start")
+	log.Printf("Coordinator{} Object was registered, rpc listening start")
 
 	// unIssuedMapTask init
 	// send to channel after everything else initializes
