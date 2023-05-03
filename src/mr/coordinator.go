@@ -23,7 +23,7 @@ type MapTaskState struct {
 type ReduceTaskState struct {
 	beginTime int64
 	workID    int
-	fileID    int
+	fileID    int // todo  非必需的字段
 }
 
 type Coordinator struct {
@@ -37,7 +37,7 @@ type Coordinator struct {
 	// 实际用 0 ~ nReduce-1 (int 类型)表示一个任务
 	unIssuedMapTask *BlockQueue // 一个队列，维护所有未运行的 map 任务，运行但超时的 map 任务也将重新放回这里
 	issuedMapTask   *MapSet     // 一个 map，维护所有正在运行的 map 任务，运行完后移出。
-	issuedMapMutex  sync.Mutex  // 多线程竞态需加锁
+	issuedMapMutex  sync.Mutex  // 多线程竞态需加锁.todo:可重命名，因为该锁不只针对issued 队列
 
 	unIssuedReduceTask *BlockQueue
 	issuedReduceTask   *MapSet
@@ -52,6 +52,8 @@ type Coordinator struct {
 }
 
 // Your code here -- RPC handlers for the worker to call.
+
+// ======================================= ↓ Map Task Part ↓ =======================================
 
 type MapTaskArgs struct {
 	// -1 if does not have one
@@ -145,6 +147,7 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 func (c *Coordinator) prepareAllReduceTasks() {
 	for i := 0; i < c.nReduce; i++ {
 		log.Printf("\033[1;32;40m prepareAllReduceTasks():putting %vth reduce task into channel \033[0m\n", i)
+		// 共 NReduce 个任务，第[j]个任务实际是规约所有的 mr-*-j 临时文件
 		c.unIssuedReduceTask.PutBack(i)
 	}
 }
@@ -213,6 +216,83 @@ func (c *Coordinator) JoinMapTask(args *MapTaskJoinArgs, reply *MapTaskJoinReply
 	c.issuedMapMutex.Unlock()
 	return nil
 }
+
+// ======================================= ↑ Map Task Part ↑ =======================================
+
+// ======================================= ↓ Reduce Task Part ↓ =======================================
+
+type ReduceTaskArgs struct {
+	WorkerID int
+}
+
+type ReduceTaskReply struct {
+	RIndex    int
+	NReduce   int
+	FileCount int
+	AllDone   bool
+}
+
+type ReduceJoinArgs struct {
+	// pass
+}
+
+type ReduceJoinReply struct {
+	// pass
+}
+
+// GiveReduceTask 维护 unIssuedReduceTasks :处理 reduce 请求,
+func (c *Coordinator) GiveReduceTask(args *ReduceTaskArgs, reply *ReduceTaskReply) error {
+	log.Printf("\033[1;34;40m worker [%v] 请求 Reduce 任务  \0330m\n", args.WorkerID)
+
+	c.issuedReduceMutex.Lock()
+
+	// 终止条件：unIssued 队列和 issued 队列都清空，说明全部任务完成
+	if c.unIssuedReduceTask.Size() == 0 && c.issuedReduceTask.Size() == 0 {
+		log.Printf("\033[1;31;40m  Reduce tasks all done!   \033[0m\n")
+		c.issuedReduceMutex.Unlock()
+		c.allDone = true
+		reply.RIndex = -1
+		reply.AllDone = true
+		return nil
+	}
+
+	log.Printf("unissued reduce tasks: %v\nissued reduce tasks: %v\n\n",
+		c.unIssuedReduceTask.Size(),
+		c.issuedReduceTask.Size())
+
+	c.issuedReduceMutex.Unlock() // release lock to allow unissued update
+
+	curTime := getNowTimeSecond()
+	ret, err := c.unIssuedReduceTask.PopBack()
+	var rindex int
+	if err != nil {
+		log.Printf("no more reduce tasks,let worker wait...")
+		rindex = -1
+	} else {
+		rindex = ret.(int)
+
+		c.issuedReduceMutex.Lock()
+		c.reduceTasks[rindex].beginTime = curTime
+		c.reduceTasks[rindex].workID = args.WorkerID
+		c.issuedReduceTask.Insert(rindex)
+		c.issuedReduceMutex.Unlock()
+
+		log.Printf("giving reduce task %v at second %v\n", rindex, curTime)
+	}
+
+	reply.RIndex = rindex
+	reply.AllDone = false
+	reply.NReduce = c.nReduce
+	reply.FileCount = len(c.filename) // todo  非必需的字段
+
+	return nil
+}
+
+func JoinReduceTask(args *ReduceJoinArgs, reply *ReduceJoinReply) error {
+	return nil
+}
+
+// ======================================= ↑ Reduce Task Part ↑ =======================================
 
 // an example RPC handler.
 //

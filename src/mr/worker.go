@@ -45,35 +45,35 @@ type Aworker struct {
 }
 
 // logPrintf 辅助函数，打印当前workerID 及 log
-func (worker *Aworker) logPrintf(format string, vars ...interface{}) {
-	log.Printf("worker %d: "+format, worker.workerID, vars)
+func (w *Aworker) logPrintf(format string, vars ...interface{}) {
+	log.Printf("worker %d: "+format, w.workerID, vars)
 }
 
 // ======================================= ↓ Map Task Part ↓ =======================================
 
 // askMapTask 执行 RPC 调用，向 master 请求任务
-func (worker *Aworker) askMapTask() *MapTaskReply {
+func (w *Aworker) askMapTask() *MapTaskReply {
 	args := MapTaskArgs{}
-	args.WorkerID = worker.workerID
+	args.WorkerID = w.workerID
 	reply := MapTaskReply{}
 
-	worker.logPrintf("requesting for a map task...\n")
+	w.logPrintf("requesting for a map task...\n")
 
 	// ※ "Coordinator.GiveMapTask" 表示调用 Coordinator 对象实例下的 GiveMapTask()
 	call("Coordinator.GiveMapTask", &args, &reply)
 
-	worker.workerID = reply.WorkerID
+	w.workerID = reply.WorkerID
 
 	if reply.FileID == -1 {
 		// 没有剩余 map 任务 -> nil
 		if reply.AllDone == true {
-			worker.logPrintf("no more map task,should switch to reduce mode\n")
+			w.logPrintf("no more map task,should switch to reduce mode\n")
 			return nil
 		} else {
 			return &reply
 		}
 	}
-	worker.logPrintf("got map task on file %v %v\n", reply.FileID, reply.FileName)
+	w.logPrintf("got map task on file %v %v\n", reply.FileID, reply.FileName)
 
 	return &reply // 因为变量逃逸机制，允许返回局部变量的指针
 }
@@ -101,7 +101,7 @@ func makeIntermediateFromFile(filename string, mapf func(string, string) []KeyVa
 // writeToFiles 负责将 makeIntermediateFromFile() 生成的键值对保存到Linux 内的 var/tmp
 // 第 i 个 map 任务传给第 j 个 reduce 的临时文件称为"mr-i-j",第 j 个 Reduce 任务读取所有的 "mr-*-j" 文件
 // 在执行第 i 个 map 任务时会生成一个 FileID ，并调用本函数传入实参
-func (worker *Aworker) writeToFiles(fileID int, nReduce int, intermediate []KeyValue) {
+func (w *Aworker) writeToFiles(fileID int, nReduce int, intermediate []KeyValue) {
 	// 根据 Hash 函数分割 intermediate
 	kvas := make([][]KeyValue, nReduce)
 	for i := 0; i < nReduce; i++ {
@@ -130,15 +130,15 @@ func (worker *Aworker) writeToFiles(fileID int, nReduce int, intermediate []KeyV
 		oname := fmt.Sprintf("mr-%v-%v", fileID, i)
 		err = os.Rename(tempfile.Name(), oname)
 		if err != nil {
-			worker.logPrintf("rename tempfile failed for %v\n", oname)
+			w.logPrintf("rename tempfile failed for %v\n", oname)
 		}
 	}
 }
 
 // joinMapTask RPC 请求 coordinator 中的 joinMapTask
-func (worker *Aworker) joinMapTask(fileID int) {
+func (w *Aworker) joinMapTask(fileID int) {
 	args := MapTaskJoinArgs{}
-	args.WorkerID = worker.workerID
+	args.WorkerID = w.workerID
 	args.FileID = fileID
 
 	reply := MapTaskJoinReply{}
@@ -146,44 +146,143 @@ func (worker *Aworker) joinMapTask(fileID int) {
 	call("Coordinator.JoinMapTask", &args, &reply)
 
 	if reply.Accept {
-		worker.logPrintf("accepted\n")
+		w.logPrintf("accepted\n")
 	} else {
-		worker.logPrintf("not accepted\n")
+		w.logPrintf("not accepted\n")
 	}
 }
 
-func (worker *Aworker) executeMap(reply *MapTaskReply) {
-	intermediate := makeIntermediateFromFile(reply.FileName, worker.mapf)
-	worker.logPrintf("writing map results to file\n")
-	worker.writeToFiles(reply.FileID, reply.NReduce, intermediate)
-	worker.joinMapTask(reply.FileID)
+func (w *Aworker) executeMap(reply *MapTaskReply) {
+	intermediate := makeIntermediateFromFile(reply.FileName, w.mapf)
+	w.logPrintf("writing map results to file\n")
+	w.writeToFiles(reply.FileID, reply.NReduce, intermediate)
+	w.joinMapTask(reply.FileID)
 }
 
 // ======================================= ↑ Map Task Part ↑ =======================================
 
+// ======================================= ↓ Reduce Task Part ↓ =======================================
+func (w *Aworker) askReduceTask() *ReduceTaskReply {
+	args := ReduceTaskArgs{}
+	reply := ReduceTaskReply{}
+
+	args.WorkerID = w.workerID
+
+	w.logPrintf("requesting for a map task...")
+
+	call("Coordinator.GiveReduceTask", &args, &reply)
+
+	// 说明 unIssuedReduceTask[与 issuedReduceTask] 再无 reduce 任务可分配.需根据 reply.AllDone 分类讨论
+	if reply.RIndex == -1 {
+		if reply.AllDone { // ! AllDone 指的是当前全部 Reduce 完成，而不是总体任务完成
+			w.logPrintf("no more reduce tasks, try to terminate worker\n")
+			return nil
+		} else {
+			return &reply
+		}
+	}
+
+	return &reply
+}
+
+// 完成具体 reduce 工作
+func (w *Aworker) executeReduce(reply *ReduceTaskReply) {
+	// 把所有 mr-*-j 中的 []KeyValue 连缀为一个大 []KeyValue
+	intermediate := make([]KeyValue, 0)
+	for i := 0; i < reply.FileCount; i++ {
+		w.logPrintf("generating intermediates on cluster %v\n in reduce task[%v]", i, reply.RIndex)
+		intermediate = append(intermediate, w.readIntermediates(i, reply.RIndex)...)
+	}
+
+	outname := fmt.Sprintf("mr-out-%v", reply.RIndex)
+	temp, err := os.CreateTemp(".", "mr-temp-*")
+	if err != nil {
+		w.logPrintf("cannot create tempfile for %v\n", outname)
+	}
+	reduceAllSlices(intermediate, w.reducef, temp)
+	temp.Close()
+	err = os.Rename(temp.Name(), outname)
+	if err != nil {
+		w.logPrintf("rename tempfile failed for %v\n", outname)
+	}
+
+	w.joinReduceTask(reply.RIndex)
+}
+
+func (w *Aworker) readIntermediates(fileID int, reduceID int) []KeyValue {
+	// 1/2: open file
+	filename := fmt.Sprintf("mr-%v-%v", fileID, reduceID)
+	file, err := os.Open(filename)
+	if err != nil {
+		w.logPrintf("cannot open temp file: mr-%v-%v", fileID, reduceID)
+	}
+	defer file.Close()
+
+	// 2/2: decode every record to an Object & append into an array
+	kva := make([]KeyValue, 0)
+	dec := json.NewDecoder(file)
+	for {
+		var kv KeyValue
+		if err := dec.Decode(&kv); err == io.EOF {
+			break
+		} else if err != nil {
+			log.Fatal(err)
+		}
+		kva = append(kva, kv)
+	}
+
+	return kva
+}
+
+// 规约 intermediate 数组。
+// todo 不过 intermediate []KeyValue 是以传值调用的实参，内存开销大。看看有没有办法改为传指针
+func reduceAllSlices(intermediate []KeyValue, reducef func(key string, values []string) string, temp *os.File) {
+	// 把intermediate reduce 为一个map [string] int
+	// 得到了单词的 set 及对应的数量,放入 mr-temp-j
+
+	result := make(map[string]int, 0)
+	for _, v := range intermediate {
+		result[v.Key] += 1
+	}
+
+}
+
+func (w *Aworker) joinReduceTask(index int) {
+
+}
+
+// ======================================= ↑ Reduce Task Part ↑ =======================================
+
 // process() 的任务是根据 mapOrReduce 的状态选择让 worker 执行 Map 或 Reduce.
 // mapOrReduce 的初始值在 Worker() 给定为 false,当 RPC 响应无结果时将切换到另一种状态.
 // 获知任务信息后（存于变量 reply）,将传递给对应的 execute() 具体完成执行任务。
-func (worker *Aworker) process() {
-	if !worker.mapOrReduce { //todo 重构点3 更改为 true 进入 map;false 进入 reduce.比较符合变量名的直觉
+func (w *Aworker) process() {
+	if !w.mapOrReduce { //todo 重构点3 更改为 true 进入 map;false 进入 reduce.比较符合变量名的直觉
 		// process map task
 		// todo 重构点4 分支语句可简化
-		reply := worker.askMapTask()
+		reply := w.askMapTask()
 		if reply == nil {
-			worker.mapOrReduce = true // 切换到 reduce 模式
+			w.mapOrReduce = true // 切换到 reduce 模式
 		} else {
 			if reply.FileID == -1 {
 				// -1 表示目前没有 map 任务。
 				// 但要考虑到正在执行 map 的其它 worker 可能因为超时而将任务重新放回 unIssuedMapTask 队列。
 				// 因此不可切换 reduce 模式
 			} else {
-				worker.executeMap(reply)
+				w.executeMap(reply)
 			}
 		}
 	}
 
-	if worker.mapOrReduce {
+	if w.mapOrReduce {
 		// process reduce task
+		reply := w.askReduceTask()
+		if reply == nil {
+			// worker will finish
+			w.allDone = true
+		} else {
+			w.executeReduce(reply)
+		}
 	}
 }
 
@@ -243,7 +342,7 @@ func CallExample() {
 // returns false if something goes wrong.
 func call(rpcname string, args interface{}, reply interface{}) bool {
 	// c, err := rpc.DialHTTP("tcp", "127.0.0.1"+":1234")
-	sockname := coordinatorSock()
+	sockname := coordinatorSock() // todo maybe existed race problem
 	c, err := rpc.DialHTTP("unix", sockname)
 	if err != nil {
 		log.Fatal("dialing:", err)

@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0eea5c4b-c09e-49b5-b631-06058250c985" name="Changes" comment="修改 Args 和 Reply struct 的首字母为大写，以解决可能的访问权限问题">
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/WUYING_1178972961_126876787.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/WUYING_1178972961_126876787.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/mr/coordinator.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/mr/coordinator.go" afterDir="false" />
@@ -18,6 +19,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Go File" />
         <option value="Go Application" />
       </list>
     </option>
@@ -75,6 +77,9 @@
     "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
       "go",
       "Markdown"
+    ],
+    "com.intellij.ide.scratch.ScratchImplUtil$2/新建临时文件": [
+      "go"
     ]
   }
 }]]></component>
@@ -107,13 +112,21 @@
       <window_info anchor="right" id="Database" order="1" weight="0.25" />
     </layout>
   </component>
-  <component name="RunManager" selected="Go 构建.go run mrworker">
+  <component name="RunManager" selected="Go 构建.go build scratch_1.go">
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="mit2" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="FILE" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build scratch_1.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="mit2" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$APPLICATION_CONFIG_DIR$/scratches/scratch_1.go" />
       <method v="2" />
     </configuration>
     <configuration name="go build scratch.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
@@ -159,11 +172,13 @@
     <list>
       <item itemvalue="Go 构建.go run mrworker" />
       <item itemvalue="Go 构建.go run seq" />
+      <item itemvalue="Go 构建.go build scratch_1.go" />
       <item itemvalue="Go 构建.go build scratch.go" />
       <item itemvalue="Go 构建.go run mrmaster" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go 构建.go build scratch_1.go" />
         <item itemvalue="Go 构建.go run mrmaster" />
         <item itemvalue="Go 构建.go build scratch.go" />
       </list>
@@ -199,11 +214,6 @@
           <url>file://$PROJECT_DIR$/src/main/mrsequential.go</url>
           <line>30</line>
           <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/src/main/mrworker.go</url>
-          <line>50</line>
-          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
