@@ -22,7 +22,7 @@ type MapTaskState struct {
 
 type ReduceTaskState struct {
 	beginTime int64
-	workID    int
+	workerID  int
 	fileID    int // todo  非必需的字段
 }
 
@@ -275,7 +275,7 @@ func (c *Coordinator) GiveReduceTask(args *ReduceTaskArgs, reply *ReduceTaskRepl
 
 		c.issuedReduceMutex.Lock()
 		c.reduceTasks[rindex].beginTime = curTime
-		c.reduceTasks[rindex].workID = args.WorkerID
+		c.reduceTasks[rindex].workerID = args.WorkerID
 		c.issuedReduceTask.Insert(rindex)
 		c.issuedReduceMutex.Unlock()
 
@@ -307,9 +307,9 @@ func (c *Coordinator) JoinReduceTask(args *ReduceJoinArgs, reply *ReduceJoinRepl
 	}
 
 	// worker-job mismatch determine
-	if args.WorkerID != c.reduceTasks[args.RIndex].workID {
+	if args.WorkerID != c.reduceTasks[args.RIndex].workerID {
 		log.Printf("\033[1;36;40m reduce task belongs to worker %v , not this %v \033[0m\n",
-			c.reduceTasks[args.RIndex].workID,
+			c.reduceTasks[args.RIndex].workerID,
 			args.WorkerID,
 		)
 		c.issuedReduceMutex.Unlock()
@@ -336,6 +336,65 @@ func (c *Coordinator) JoinReduceTask(args *ReduceJoinArgs, reply *ReduceJoinRepl
 }
 
 // ======================================= ↑ Reduce Task Part ↑ =======================================
+
+// ======================================= ↓ Timeout Detect Part ↓ ====================================
+// 'm' mean issuedMapTask
+func (m *MapSet) removeTimeoutMapTasks(mapTasks []MapTaskState, unIssuedMapTasks *BlockQueue) {
+	// A Coordinator instance maintaining only one copy of issued(Map/Reduce)Task
+	// complete timeout task via issuedTask (type:MapSet) directly
+	for fileID, issued := range m.bmap {
+		curTime := getNowTimeSecond()
+		if issued {
+			if curTime-mapTasks[fileID.(int)].beginTime > maxTaskTime {
+				log.Printf("worker %v on file %v abandoned due to timeout\n",
+					mapTasks[fileID.(int)].workerID,
+					fileID)
+				m.bmap[fileID.(int)] = false
+				m.count--
+				unIssuedMapTasks.PutFront(fileID.(int))
+			}
+		}
+	}
+}
+
+// 'm' mean issuedReduceTask
+func (m *MapSet) removeTimeoutReduceTasks(reduceTasks []ReduceTaskState, unIssuedReduceTasks *BlockQueue) {
+	// A Coordinator instance maintaining only one copy of issued(Map/Reduce)Task
+	// complete timeout task via issuedTask (type:MapSet) directly
+	for fileID, issued := range m.bmap {
+		curTime := getNowTimeSecond()
+		if issued {
+			if curTime-reduceTasks[fileID.(int)].beginTime > maxTaskTime {
+				log.Printf("worker %v on file %v abandoned due to timeout\n",
+					reduceTasks[fileID.(int)].workerID,
+					fileID)
+				m.bmap[fileID.(int)] = false
+				m.count--
+				unIssuedReduceTasks.PutFront(fileID.(int))
+			}
+		}
+	}
+}
+
+func (c *Coordinator) removeTimeoutTasks() {
+	log.Println("removing timeout maptasks...")
+	c.issuedMapMutex.Lock()
+	c.issuedMapTask.removeTimeoutMapTasks(c.mapTasks, c.unIssuedMapTask)
+	c.issuedMapMutex.Unlock()
+
+	c.issuedReduceMutex.Lock()
+	c.issuedReduceTask.removeTimeoutReduceTasks(c.reduceTasks, c.unIssuedReduceTask)
+	c.issuedReduceMutex.Unlock()
+}
+
+func (c *Coordinator) loopRemoveTimeoutTasks() {
+	for {
+		time.Sleep(2 * time.Second)
+		c.removeTimeoutTasks()
+	}
+}
+
+// ======================================= ↑ Timeout Detect Part ↑ ====================================
 
 // an example RPC handler.
 //
@@ -406,6 +465,7 @@ func MakeCoordinator(files []string, nReduce int) *Coordinator {
 
 	log.Printf("Coordinator{} Object was registered, rpc listening start")
 
+	go c.loopRemoveTimeoutTasks()
 	// unIssuedMapTask init
 	// send to channel after everything else initializes
 	log.Printf("file count %d \n", len(files))
