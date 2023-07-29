@@ -43,6 +43,7 @@ type Coordinator struct {
 	issuedReduceTask   *MapSet
 	issuedReduceMutex  sync.Mutex
 
+	// record which worker performed which task at which time
 	mapTasks    []MapTaskState
 	reduceTasks []ReduceTaskState
 
@@ -233,11 +234,12 @@ type ReduceTaskReply struct {
 }
 
 type ReduceJoinArgs struct {
-	// pass
+	RIndex   int
+	WorkerID int
 }
 
 type ReduceJoinReply struct {
-	// pass
+	Accept bool
 }
 
 // GiveReduceTask 维护 unIssuedReduceTasks :处理 reduce 请求,
@@ -288,7 +290,48 @@ func (c *Coordinator) GiveReduceTask(args *ReduceTaskArgs, reply *ReduceTaskRepl
 	return nil
 }
 
-func JoinReduceTask(args *ReduceJoinArgs, reply *ReduceJoinReply) error {
+// JoinReduceTask maintaining issuedReduceTask Queue after worker finish actual reduce work
+func (c *Coordinator) JoinReduceTask(args *ReduceJoinArgs, reply *ReduceJoinReply) error {
+	log.Printf("\033[1;36;40m got join request form worker %v on Reduce index %v %v \033[0m\n",
+		args.WorkerID,
+		args.RIndex,
+		c.reduceTasks[args.RIndex])
+
+	c.issuedReduceMutex.Lock()
+
+	// exist determine
+	if !c.issuedReduceTask.Has(args.RIndex) {
+		log.Println("task abandoned or dose not exists in issuedReduceTask")
+		c.issuedReduceMutex.Unlock()
+		return nil
+	}
+
+	// worker-job mismatch determine
+	if args.WorkerID != c.reduceTasks[args.RIndex].workID {
+		log.Printf("\033[1;36;40m reduce task belongs to worker %v , not this %v \033[0m\n",
+			c.reduceTasks[args.RIndex].workID,
+			args.WorkerID,
+		)
+		c.issuedReduceMutex.Unlock()
+		reply.Accept = false
+		return nil
+	}
+
+	// overtime determine
+	curTime := getNowTimeSecond()
+	beginTime := c.reduceTasks[args.RIndex].beginTime
+	if curTime-beginTime > maxTaskTime {
+		log.Println("reduce task overtime")
+		reply.Accept = false
+		c.unIssuedReduceTask.PutFront(args.RIndex)
+	} else {
+		// here,the over-timed task should be taken out of the issuedTask Queue
+		// will completed by a special timeout detection goroutine
+		log.Println("reduce task accepting")
+		reply.Accept = true
+		c.issuedReduceTask.Remove(args.RIndex)
+	}
+	c.issuedReduceMutex.Unlock()
 	return nil
 }
 

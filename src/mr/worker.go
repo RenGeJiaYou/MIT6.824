@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 )
 import "log"
 import "net/rpc"
@@ -185,15 +186,16 @@ func (w *Aworker) askReduceTask() *ReduceTaskReply {
 	return &reply
 }
 
-// 完成具体 reduce 工作
+// 完成具体 reduce 工作,the reduce[j] worker just deal with "mr-*-j" files,the total mount of '*' is FileCount
 func (w *Aworker) executeReduce(reply *ReduceTaskReply) {
-	// 把所有 mr-*-j 中的 []KeyValue 连缀为一个大 []KeyValue
+	// 1/3: 把所有 mr-*-j 中的 []KeyValue 连缀为一个大 []KeyValue (in memory)
 	intermediate := make([]KeyValue, 0)
 	for i := 0; i < reply.FileCount; i++ {
 		w.logPrintf("generating intermediates on cluster %v\n in reduce task[%v]", i, reply.RIndex)
 		intermediate = append(intermediate, w.readIntermediates(i, reply.RIndex)...)
 	}
 
+	// 2/3: sort the big intermediate and write to a temp file (in disk)
 	outname := fmt.Sprintf("mr-out-%v", reply.RIndex)
 	temp, err := os.CreateTemp(".", "mr-temp-*")
 	if err != nil {
@@ -206,11 +208,15 @@ func (w *Aworker) executeReduce(reply *ReduceTaskReply) {
 		w.logPrintf("rename tempfile failed for %v\n", outname)
 	}
 
+	// 3/3: maintaining the reduce issuedTask
 	w.joinReduceTask(reply.RIndex)
 }
 
+// read the file "mr-{fileID}-{reduceID}" to memory
 func (w *Aworker) readIntermediates(fileID int, reduceID int) []KeyValue {
 	// 1/2: open file
+	// the range of 'fileID' in [0,FileCount);
+	// the real value of 'reduceID' just current reduce work index
 	filename := fmt.Sprintf("mr-%v-%v", fileID, reduceID)
 	file, err := os.Open(filename)
 	if err != nil {
@@ -234,21 +240,56 @@ func (w *Aworker) readIntermediates(fileID int, reduceID int) []KeyValue {
 	return kva
 }
 
+// ByKey has same structure as intermediate,sort by key
+type ByKey []KeyValue
+
+// Len Swap Less implement sort interface
+func (a ByKey) Len() int           { return len(a) }
+func (a ByKey) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByKey) Less(i, j int) bool { return a[i].Key < a[j].Key }
+
 // 规约 intermediate 数组。
 // todo 不过 intermediate []KeyValue 是以传值调用的实参，内存开销大。看看有没有办法改为传指针
 func reduceAllSlices(intermediate []KeyValue, reducef func(key string, values []string) string, temp *os.File) {
-	// 把intermediate reduce 为一个map [string] int
-	// 得到了单词的 set 及对应的数量,放入 mr-temp-j
+	// 1/5: sort whole intermediate
+	sort.Sort(ByKey(intermediate))
 
-	result := make(map[string]int, 0)
-	for _, v := range intermediate {
-		result[v.Key] += 1
+	for i := 0; i < len(intermediate); {
+		// 2/5: cut intermediate by key
+		j := i + 1
+		for j < len(intermediate) && intermediate[i].Key == intermediate[j].Key {
+			j++
+		}
+
+		// 3/5: collect all values(reducef requires type :[]string) of each unique key
+		var values []string
+		for k := i; k < j; k++ {
+			values = append(values, intermediate[k].Value)
+		}
+
+		// 4/5: call reducef function
+		v := reducef(intermediate[i].Key, values)
+
+		// 5/5: use fmt.Fprintf() write to temp file
+		fmt.Fprintf(temp, "%v %v/n", intermediate[i], v)
+		i = j
 	}
 
 }
 
 func (w *Aworker) joinReduceTask(index int) {
+	args := ReduceJoinArgs{}
+	args.WorkerID = w.workerID
+	args.RIndex = index
+	reply := ReduceJoinReply{}
 
+	call("Coordinator.JoinReduceTask", &args, &reply)
+
+	if reply.Accept {
+		w.logPrintf("accepted\n")
+	} else {
+		w.logPrintf("not accepted\n")
+	}
 }
 
 // ======================================= ↑ Reduce Task Part ↑ =======================================
