@@ -326,7 +326,7 @@ func (c *Coordinator) JoinReduceTask(args *ReduceJoinArgs, reply *ReduceJoinRepl
 		c.unIssuedReduceTask.PutFront(args.RIndex)
 	} else {
 		// here,the over-timed task should be taken out of the issuedTask Queue
-		// will completed by a special timeout detection goroutine
+		// will be completed by a special timeout detection goroutine
 		log.Println("reduce task accepting")
 		reply.Accept = true
 		c.issuedReduceTask.Remove(args.RIndex)
@@ -377,7 +377,7 @@ func (m *MapSet) removeTimeoutReduceTasks(reduceTasks []ReduceTaskState, unIssue
 }
 
 func (c *Coordinator) removeTimeoutTasks() {
-	log.Println("removing timeout maptasks...")
+	log.Println("removing timeout map tasks...")
 	c.issuedMapMutex.Lock()
 	c.issuedMapTask.removeTimeoutMapTasks(c.mapTasks, c.unIssuedMapTask)
 	c.issuedMapMutex.Unlock()

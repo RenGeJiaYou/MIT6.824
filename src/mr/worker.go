@@ -322,7 +322,6 @@ func (w *Aworker) process() {
 			}
 		}
 	}
-
 	if w.mapOrReduce {
 		// process reduce task
 		reply := w.askReduceTask()
