@@ -11,6 +11,7 @@ package main
 //
 
 import (
+	"bytes"
 	"mit2/src/mr"
 )
 import "plugin"
@@ -44,6 +45,10 @@ func main() {
 	//	return strconv.Itoa(len(values))
 	//}
 	mapf, reducef := loadPlugin(os.Args[1]) // os.Args 保存了调用命令的参数，第[0] 是 "mrworker.go";第[1]个是"wc.so"
+
+	// Temporarily turn off log printing to the terminal
+	buf := new(bytes.Buffer)
+	log.SetOutput(buf)
 
 	mr.Worker(mapf, reducef)
 }

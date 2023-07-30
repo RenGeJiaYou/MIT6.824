@@ -9,7 +9,11 @@ package main
 // Please do not change this file.
 //
 
-import "mit2/src/mr"
+import (
+	"bytes"
+	"log"
+	"mit2/src/mr"
+)
 import "time"
 import "os"
 import "fmt"
@@ -19,6 +23,10 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Usage: mrcoordinator inputfiles...\n")
 		os.Exit(1)
 	}
+
+	// Temporarily turn off log printing to the terminal
+	buf := new(bytes.Buffer)
+	log.SetOutput(buf)
 
 	m := mr.MakeCoordinator(os.Args[1:], 10)
 	for m.Done() == false {
