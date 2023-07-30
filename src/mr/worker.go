@@ -195,7 +195,7 @@ func (w *Aworker) executeReduce(reply *ReduceTaskReply) {
 		intermediate = append(intermediate, w.readIntermediates(i, reply.RIndex)...)
 	}
 
-	log.Printf("\033[1;34;40m intermediate[0]: [%v] typeof intermediate:%T \033\n", intermediate[0], intermediate)
+	//log.Printf("\033[1;34;40m intermediate[0]: [%v] typeof intermediate:%T \033\n", intermediate[0], intermediate)
 	// 2/3: sort the big intermediate and write to a temp file (in disk)
 	outname := fmt.Sprintf("mr-out-%v", reply.RIndex)
 	temp, err := os.CreateTemp(".", "mr-temp-*")

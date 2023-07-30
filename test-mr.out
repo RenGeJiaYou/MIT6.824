@@ -1,0 +1,644 @@
+WUYING\1178972961_126876787@8tmnri96igl1m08:~/Project/Distribute/MIT6.824$ bash test-mr.sh
+bash: test-mr.sh: 没有那个文件或目录
+WUYING\1178972961_126876787@8tmnri96igl1m08:~/Project/Distribute/MIT6.824$ cd src/main
+WUYING\1178972961_126876787@8tmnri96igl1m08:~/Project/Distribute/MIT6.824/src/main$ bash test-mr.sh
+*** Starting wc test.
+==================
+WARNING: DATA RACE
+Write at 0x00c0000b8119 by goroutine 592:
+  mit2/src/mr.(*Coordinator).GiveReduceTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:255 +0x628
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous read at 0x00c0000b8119 by main goroutine:
+  mit2/src/mr.(*Coordinator).Done()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:425 +0xc4
+  main.main()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main/mrcoordinator.go:32 +0x115
+
+Goroutine 592 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+Found 1 data race(s)
+--- wc test: PASS
+*** Starting indexer test.
+--- indexer test: PASS
+==================
+WARNING: DATA RACE
+Read at 0x00c000136119 by main goroutine:
+  mit2/src/mr.(*Coordinator).Done()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:419 +0x44
+  main.main()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main/mrcoordinator.go:32 +0x115
+
+Previous write at 0x00c000136119 by goroutine 213:
+  mit2/src/mr.(*Coordinator).GiveReduceTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:255 +0x628
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Goroutine 213 (finished) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+Found 1 data race(s)
+*** Starting map parallelism test.
+==================
+WARNING: DATA RACE
+Write at 0x00c0000161a9 by goroutine 127:
+  mit2/src/mr.(*Coordinator).GiveReduceTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:255 +0x628
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous read at 0x00c0000161a9 by main goroutine:
+  mit2/src/mr.(*Coordinator).Done()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:425 +0xc4
+  main.main()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main/mrcoordinator.go:32 +0x115
+
+Goroutine 127 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+--- map parallelism test: PASS
+==================
+WARNING: DATA RACE
+Read at 0x00c0000161a9 by main goroutine:
+  mit2/src/mr.(*Coordinator).Done()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:419 +0x44
+  main.main()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main/mrcoordinator.go:32 +0x115
+
+Previous write at 0x00c0000161a9 by goroutine 130:
+  mit2/src/mr.(*Coordinator).GiveReduceTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:255 +0x628
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Goroutine 130 (finished) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+Found 2 data race(s)
+*** Starting reduce parallelism test.
+==================
+WARNING: DATA RACE
+Write at 0x00c00012c119 by goroutine 134:
+  mit2/src/mr.(*Coordinator).GiveReduceTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:255 +0x628
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous read at 0x00c00012c119 by main goroutine:
+  mit2/src/mr.(*Coordinator).Done()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:425 +0xc4
+  main.main()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main/mrcoordinator.go:32 +0x115
+
+Goroutine 134 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+--- reduce parallelism test: PASS
+Found 1 data race(s)
+*** Starting job count test.
+==================
+WARNING: DATA RACE
+Read at 0x00c0000b80b0 by goroutine 13:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:92 +0x8c
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous write at 0x00c0000b80b0 by goroutine 14:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:93 +0xef
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Goroutine 13 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+
+Goroutine 14 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+--- job count test: PASS
+==================
+WARNING: DATA RACE
+Read at 0x00c0000b8119 by main goroutine:
+  mit2/src/mr.(*Coordinator).Done()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:419 +0x44
+  main.main()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main/mrcoordinator.go:32 +0x115
+
+Previous write at 0x00c0000b8119 by goroutine 2842:
+  mit2/src/mr.(*Coordinator).GiveReduceTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:255 +0x628
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Goroutine 2842 (finished) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+Found 2 data race(s)
+*** Starting early exit test.
+==================
+WARNING: DATA RACE
+Read at 0x00c00013c118 by goroutine 76:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:103 +0x1ee
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous write at 0x00c00013c118 by goroutine 77:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:112 +0x8d2
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Goroutine 76 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+
+Goroutine 77 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c00013c119 by goroutine 150:
+  mit2/src/mr.(*Coordinator).GiveReduceTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:255 +0x628
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous read at 0x00c00013c119 by main goroutine:
+  mit2/src/mr.(*Coordinator).Done()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:425 +0xc4
+  main.main()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main/mrcoordinator.go:32 +0x115
+
+Goroutine 150 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+Found 2 data race(s)
+mr-wc-all-final mr-wc-all-initial 不同：第 56 字节，第 3 行
+--- output changed after first worker exited
+--- early exit test: FAIL
+*** Starting crash test.
+==================
+WARNING: DATA RACE
+Read at 0x00c000016140 by goroutine 20:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:92 +0x8c
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous write at 0x00c000016140 by goroutine 19:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:93 +0xef
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Goroutine 20 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+
+Goroutine 19 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c000016140 by goroutine 136341:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:93 +0xef
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous write at 0x00c000016140 by goroutine 136342:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:93 +0xef
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Goroutine 136341 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+
+Goroutine 136342 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c000016140 by goroutine 136342:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:93 +0xef
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous read at 0x00c000016140 by goroutine 136341:
+  mit2/src/mr.(*Coordinator).GiveMapTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:93 +0xd1
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Goroutine 136342 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+
+Goroutine 136341 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+==================
+WARNING: DATA RACE
+Write at 0x00c0000161a9 by goroutine 136804:
+  mit2/src/mr.(*Coordinator).GiveReduceTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:255 +0x628
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Previous read at 0x00c0000161a9 by main goroutine:
+  mit2/src/mr.(*Coordinator).Done()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:425 +0xc4
+  main.main()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main/mrcoordinator.go:32 +0x115
+
+Goroutine 136804 (running) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+==================
+WARNING: DATA RACE
+Read at 0x00c0000161a9 by main goroutine:
+  mit2/src/mr.(*Coordinator).Done()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:419 +0x44
+  main.main()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/main/mrcoordinator.go:32 +0x115
+
+Previous write at 0x00c0000161a9 by goroutine 136846:
+  mit2/src/mr.(*Coordinator).GiveReduceTask()
+      /home/WUYING_1178972961_126876787/Project/Distribute/MIT6.824/src/mr/coordinator.go:255 +0x628
+  runtime.call32()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/runtime/asm_amd64.s:729 +0x48
+  reflect.Value.Call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/reflect/value.go:370 +0xc7
+  net/rpc.(*service).call()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:382 +0x27a
+  net/rpc.(*Server).ServeCodec.func1()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x16b
+
+Goroutine 136846 (finished) created at:
+  net/rpc.(*Server).ServeCodec()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:479 +0x5fb
+  net/rpc.(*Server).ServeConn()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:454 +0x649
+  net/rpc.(*Server).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/rpc/server.go:709 +0x504
+  net/http.(*ServeMux).ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2500 +0xc5
+  net/http.serverHandler.ServeHTTP()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:2936 +0x682
+  net/http.(*conn).serve()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:1995 +0xbd4
+  net/http.(*Server).Serve.func3()
+      /home/WUYING_1178972961_126876787/sdk/go1.20.3/src/net/http/server.go:3089 +0x58
+==================
+Found 5 data race(s)
+--- crash test: PASS
+*** FAILED SOME TESTS
+WUYING\1178972961_126876787@8tmnri96igl1m08:~/Project/Distribute/MIT6.824/src/main$
+
