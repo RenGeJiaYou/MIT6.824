@@ -126,7 +126,7 @@ func (c *Coordinator) GiveMapTask(args *MapTaskArgs, reply *MapTaskReply) error 
 	} else {
 		// todo:重构点1：如果全部完成后运行无误，考虑删去 else{}
 		fileID = ret.(int)
-		log.Printf("任务 [%v , %s] 从unIssuedMapTask -> issuedMapMutex", fileID, c.filename[fileID])
+		log.Printf("任务 [%v , %s] 从unIssuedMapTask -> issuedMapTask", fileID, c.filename[fileID])
 
 		c.issuedMapMutex.Lock()
 		reply.FileName = c.filename[fileID]

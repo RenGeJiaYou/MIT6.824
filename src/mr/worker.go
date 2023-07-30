@@ -169,7 +169,7 @@ func (w *Aworker) askReduceTask() *ReduceTaskReply {
 
 	args.WorkerID = w.workerID
 
-	w.logPrintf("requesting for a map task...")
+	w.logPrintf("requesting for a reduce task...")
 
 	call("Coordinator.GiveReduceTask", &args, &reply)
 
@@ -191,10 +191,11 @@ func (w *Aworker) executeReduce(reply *ReduceTaskReply) {
 	// 1/3: 把所有 mr-*-j 中的 []KeyValue 连缀为一个大 []KeyValue (in memory)
 	intermediate := make([]KeyValue, 0)
 	for i := 0; i < reply.FileCount; i++ {
-		w.logPrintf("generating intermediates on cluster %v\n in reduce task[%v]", i, reply.RIndex)
+		w.logPrintf("generating intermediates on cluster  in reduce task[%v]", reply.RIndex)
 		intermediate = append(intermediate, w.readIntermediates(i, reply.RIndex)...)
 	}
 
+	log.Printf("\033[1;34;40m intermediate[0]: [%v] typeof intermediate:%T \033\n", intermediate[0], intermediate)
 	// 2/3: sort the big intermediate and write to a temp file (in disk)
 	outname := fmt.Sprintf("mr-out-%v", reply.RIndex)
 	temp, err := os.CreateTemp(".", "mr-temp-*")
@@ -236,7 +237,7 @@ func (w *Aworker) readIntermediates(fileID int, reduceID int) []KeyValue {
 		}
 		kva = append(kva, kv)
 	}
-
+	//log.Printf("\033[1;34;40m kva[0:10]: [%v] type:%T \033\n", kva[0:10], kva) // type:[]mr.KeyValue
 	return kva
 }
 
@@ -268,10 +269,17 @@ func reduceAllSlices(intermediate []KeyValue, reducef func(key string, values []
 		}
 
 		// 4/5: call reducef function
-		v := reducef(intermediate[i].Key, values)
+		count := reducef(intermediate[i].Key, values)
 
 		// 5/5: use fmt.Fprintf() write to temp file
-		fmt.Fprintf(temp, "%v %v/n", intermediate[i], v)
+		_, err := fmt.Fprintln(temp, intermediate[i].Key, count)
+		if err != nil {
+			log.Fatal("can't write reduce result to temp file")
+		}
+
+		if i == 0 {
+			log.Printf("\033[1;34;40m intermediate[0]: [%v] \t count: %v \033\n", intermediate[i], count)
+		}
 		i = j
 	}
 
