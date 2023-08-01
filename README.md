@@ -1,12 +1,13 @@
 
-# mit 6-824
+# MIT 6.824
 The Source Code of MIT 6.824
 
 本仓库包括了学习 MIT 6.824 分布式系统的源码及其它相关配置。准备每完成一个Lab ，都在 `readme.md` 创建相关的一章，记录项目结构和代码逻辑。
 
 ---
 # Lab 1
-### 任务详情
+### Introduction
+Lab1 的任务是构建一个 MapReduce 系统。要实现一个 worker 进程来调用 Map and Reduce functions 并负责读取数据和写出结果,和一个 coordinator（论文中称为 master） 进程来分配任务给 workers 并应付 workers 处理失败时的情况。编写的程序应当和  [[MapReduce：Simplified Data Processing on Large Clusters]]  中的相同。
 ![任务详情](https://github.com/RenGeJiaYou/MIT6.824/assets/37719543/e90aefb8-6647-4af1-a867-8fec308b27eb)
 
 
@@ -93,7 +94,8 @@ reduce 的具体任务是：将排序好的键值对数组，键相同的合并�
 	
 	第 j 个 reduce 任务 规约 m 个 “mr-\*-j”文件为一个"mr-out-j" 文件
 
-
+8. `Go Plugin` 在调试程序时的奇怪问题。
+   最终的解决方案是在调试时直接调用`mapf`、`reducef`两个函数。在运行 `test-mr.sh` 前再重新采用插件模式。详见我的这篇博客：![Debugging 时无法获取Go plugin(.so文件）的内存地址](https://juejin.cn/post/7219084778347642938)
  
 
 
